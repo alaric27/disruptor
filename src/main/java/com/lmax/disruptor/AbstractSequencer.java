@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import com.lmax.disruptor.util.Util;
 
 /**
+ * Sequencer的抽象实现
  * Base class for the various sequencer types (single/multi).  Provides
  * common functionality like the management of gating sequences (add/remove) and
  * ownership of the current cursor.
@@ -30,9 +31,24 @@ public abstract class AbstractSequencer implements Sequencer
     private static final AtomicReferenceFieldUpdater<AbstractSequencer, Sequence[]> SEQUENCE_UPDATER =
         AtomicReferenceFieldUpdater.newUpdater(AbstractSequencer.class, Sequence[].class, "gatingSequences");
 
+    /**
+     * ringBuffer的长度，必须为2的次方
+     */
     protected final int bufferSize;
+
+    /**
+     * 等待策略
+     */
     protected final WaitStrategy waitStrategy;
+
+    /**
+     * todo
+     */
     protected final Sequence cursor = new Sequence(Sequencer.INITIAL_CURSOR_VALUE);
+
+    /**
+     * todo
+     */
     protected volatile Sequence[] gatingSequences = new Sequence[0];
 
     /**

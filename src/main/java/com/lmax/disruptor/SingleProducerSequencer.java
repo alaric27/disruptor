@@ -44,6 +44,8 @@ abstract class SingleProducerSequencerFields extends SingleProducerSequencerPad
 }
 
 /**
+ *
+ * 单生产者的序列生成器
  * <p>Coordinator for claiming sequences for access to a data structure while tracking dependent {@link Sequence}s.
  * Not safe for use from multiple threads as it does not implement any barriers.</p>
  *

@@ -38,10 +38,19 @@ public final class MultiProducerSequencer extends AbstractSequencer
 
     private final Sequence gatingSequenceCache = new Sequence(Sequencer.INITIAL_CURSOR_VALUE);
 
-    // availableBuffer tracks the state of each ringbuffer slot
-    // see below for more details on the approach
+    /**
+     * 跟踪每个RingBuffer的槽状态
+     */
     private final int[] availableBuffer;
+
+    /**
+     * 用于计算sequence对应的数组索引
+     */
     private final int indexMask;
+
+    /**
+     * bufferSize取2的对数, 以位移的方式计算sequence整除bufferSize的值
+     */
     private final int indexShift;
 
     /**
@@ -52,10 +61,13 @@ public final class MultiProducerSequencer extends AbstractSequencer
      */
     public MultiProducerSequencer(int bufferSize, final WaitStrategy waitStrategy)
     {
+        // 调用默认的构造方法
         super(bufferSize, waitStrategy);
         availableBuffer = new int[bufferSize];
         indexMask = bufferSize - 1;
+        // 取2的对数
         indexShift = Util.log2(bufferSize);
+        // 初始化availableBuffer数组所有的值为-1
         initialiseAvailableBuffer();
     }
 
@@ -198,6 +210,9 @@ public final class MultiProducerSequencer extends AbstractSequencer
         return getBufferSize() - (produced - consumed);
     }
 
+    /**
+     * 初始化availableBuffer数组所有的值为-1
+     */
     private void initialiseAvailableBuffer()
     {
         for (int i = availableBuffer.length - 1; i != 0; i--)

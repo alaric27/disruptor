@@ -106,6 +106,8 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
     protected long p1, p2, p3, p4, p5, p6, p7;
 
     /**
+     *
+     * 构造RingBuffer最终调用到的构造方法
      * Construct a RingBuffer with the full option set.
      *
      * @param eventFactory to newInstance entries for filling the RingBuffer
@@ -120,6 +122,7 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
     }
 
     /**
+     * 创建一个多生产者的RingBuffer，单生产者和多生产者的主要差别在RingBuffer中的Sequencer不同
      * Create a new multiple producer RingBuffer with the specified wait strategy.
      *
      * @param <E> Class of the event stored in the ring buffer.
@@ -156,6 +159,8 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
     }
 
     /**
+     *
+     * 创建一个单生产者的RingBuffer，单生产者和多生产者的主要差别在RingBuffer中的Sequencer不同
      * Create a new single producer RingBuffer with the specified wait strategy.
      *
      * @param <E> Class of the event stored in the ring buffer.

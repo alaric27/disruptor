@@ -1,5 +1,8 @@
 package com.lmax.disruptor;
 
+/**
+ * 掌控序列的生成及发布
+ */
 public interface Sequenced
 {
     /**

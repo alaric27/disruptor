@@ -36,6 +36,8 @@ class RhsPadding extends Value
 }
 
 /**
+ * 其功能类似AtomicLong,但是比AtomicLong优点为消除了伪共享
+ *
  * <p>Concurrent sequence class used for tracking the progress of
  * the ring buffer and event processors.  Support a number
  * of concurrent operations including CAS and order writes.

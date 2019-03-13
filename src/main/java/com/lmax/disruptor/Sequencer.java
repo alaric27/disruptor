@@ -16,12 +16,15 @@
 package com.lmax.disruptor;
 
 /**
+ *
+ * 掌控序列的生成，其两大主要实现类SingleProducerSequencer和MultiProducerSequencer
  * Coordinates claiming sequences for access to a data structure while tracking dependent {@link Sequence}s
  */
 public interface Sequencer extends Cursored, Sequenced
 {
     /**
      * Set to -1 as sequence starting point
+     * sequence默认开始的位置
      */
     long INITIAL_CURSOR_VALUE = -1L;
 

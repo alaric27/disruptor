@@ -55,13 +55,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * </pre>
  *
  * @param <T> the type of event used.
+ * 辅助类，引导disruptor启动
  */
 public class Disruptor<T>
 {
+    /**
+     * ringBuffer对象
+     */
     private final RingBuffer<T> ringBuffer;
+
+    /**
+     * 线程执行器,默认为BasicExecutor
+     */
     private final Executor executor;
+
+    /**
+     * 消费者的集合
+     */
     private final ConsumerRepository<T> consumerRepository = new ConsumerRepository<>();
+
+    /**
+     * 标识disruptor是否启动
+     */
     private final AtomicBoolean started = new AtomicBoolean(false);
+
+    /**
+     * 异常处理器
+     */
     private ExceptionHandler<? super T> exceptionHandler = new ExceptionHandlerWrapper<>();
 
     /**
@@ -105,6 +125,8 @@ public class Disruptor<T>
     }
 
     /**
+     *
+     * 默认使用BlockingWaitStrategy等待策略，默认在多生产者模式
      * Create a new Disruptor. Will default to {@link com.lmax.disruptor.BlockingWaitStrategy} and
      * {@link ProducerType}.MULTI
      *
@@ -125,6 +147,9 @@ public class Disruptor<T>
      * @param threadFactory  a {@link ThreadFactory} to create threads for processors.
      * @param producerType   the claim strategy to use for the ring buffer.
      * @param waitStrategy   the wait strategy to use for the ring buffer.
+     *
+     * disruptor为什么不用ThreadPoolExecutor,而是自定义了一个简单的BasicExecutor执行器
+     * disruptor中的执行器只是为了启动EventProcessor线程的。该线程一般启动后会一直运行，也不需要关闭线程，所以不需要复杂的线程池
      */
     public Disruptor(
             final EventFactory<T> eventFactory,

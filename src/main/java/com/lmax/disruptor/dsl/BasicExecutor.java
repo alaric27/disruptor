@@ -8,9 +8,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * 默认的线程执行器
+ *
+ */
 public class BasicExecutor implements Executor
 {
     private final ThreadFactory factory;
+
+    /**
+     * 保存当前执行器启动过的线程，用于打印日志
+     */
     private final Queue<Thread> threads = new ConcurrentLinkedQueue<>();
 
     public BasicExecutor(ThreadFactory factory)
@@ -18,6 +26,11 @@ public class BasicExecutor implements Executor
         this.factory = factory;
     }
 
+
+    /**
+     * 执行Runnable命令时，根据ThreadFactory创建一个线程并启动，随后添加到threads队列中
+     * @param command
+     */
     @Override
     public void execute(Runnable command)
     {
