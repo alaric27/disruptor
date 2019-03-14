@@ -17,6 +17,7 @@ package com.lmax.disruptor;
 
 
 /**
+ * 用于协调生产者和消费者
  * Coordination barrier for tracking the cursor for publishers and sequence of
  * dependent {@link EventProcessor}s for processing a data structure
  */

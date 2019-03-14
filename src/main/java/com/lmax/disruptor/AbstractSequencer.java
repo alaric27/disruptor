@@ -118,6 +118,7 @@ public abstract class AbstractSequencer implements Sequencer
     }
 
     /**
+     * 创建 SequenceBarrier
      * @see Sequencer#newBarrier(Sequence...)
      */
     @Override

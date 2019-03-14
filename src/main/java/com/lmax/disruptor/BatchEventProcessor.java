@@ -122,6 +122,7 @@ public final class BatchEventProcessor<T>
             {
                 if (running.get() == RUNNING)
                 {
+                    // 如果是运行状态，处理Event
                     processEvents();
                 }
             }
@@ -142,6 +143,7 @@ public final class BatchEventProcessor<T>
             }
             else
             {
+                // 此时可能是HALTED状态，触发启动和退出事件
                 earlyExit();
             }
         }

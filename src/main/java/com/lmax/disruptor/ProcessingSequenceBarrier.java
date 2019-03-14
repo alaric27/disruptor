@@ -17,15 +17,24 @@ package com.lmax.disruptor;
 
 
 /**
+ *
+ * 生产者和消费者的协调者
  * {@link SequenceBarrier} handed out for gating {@link EventProcessor}s on a cursor sequence and optional dependent {@link EventProcessor}(s),
  * using the given WaitStrategy.
  */
 final class ProcessingSequenceBarrier implements SequenceBarrier
 {
+    /**
+     * 等待策略
+     */
     private final WaitStrategy waitStrategy;
     private final Sequence dependentSequence;
     private volatile boolean alerted = false;
     private final Sequence cursorSequence;
+
+    /**
+     * RingBuffer中的Sequencer
+     */
     private final Sequencer sequencer;
 
     ProcessingSequenceBarrier(

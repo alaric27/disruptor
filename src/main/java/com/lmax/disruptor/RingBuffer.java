@@ -35,6 +35,7 @@ abstract class RingBufferFields<E> extends RingBufferPad
 
     static
     {
+        // 返回当前数组元素占用的字节数
         final int scale = UNSAFE.arrayIndexScale(Object[].class);
         if (4 == scale)
         {
@@ -53,9 +54,24 @@ abstract class RingBufferFields<E> extends RingBufferPad
         REF_ARRAY_BASE = UNSAFE.arrayBaseOffset(Object[].class) + 128;
     }
 
+    /**
+     * 用于计算sequence对应的数组索引
+     */
     private final long indexMask;
+
+    /**
+     * 实际数据的存储
+     */
     private final Object[] entries;
+
+    /**
+     * bufferSize
+     */
     protected final int bufferSize;
+
+    /**
+     * 序列控制器
+     */
     protected final Sequencer sequencer;
 
     RingBufferFields(
@@ -75,10 +91,18 @@ abstract class RingBufferFields<E> extends RingBufferPad
         }
 
         this.indexMask = bufferSize - 1;
+        //新建数组，长度为bufferSize + 两倍的BUFFER_PAD
         this.entries = new Object[sequencer.getBufferSize() + 2 * BUFFER_PAD];
+        // 初始化数组
         fill(eventFactory);
     }
 
+    /**
+     * 使用EventFactory工厂填充数组，从BUFFER_PAD开始填充,填充bufferSize个大小
+     * 相当于在entries的前后各空出来一个BUFFER_PAD大小的空间
+     * todo
+     * @param eventFactory
+     */
     private void fill(EventFactory<E> eventFactory)
     {
         for (int i = 0; i < bufferSize; i++)
