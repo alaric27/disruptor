@@ -590,6 +590,7 @@ public class Disruptor<T>
         {
             final EventHandler<? super T> eventHandler = eventHandlers[i];
 
+            // 创建BatchEventProcessor
             final BatchEventProcessor<T> batchEventProcessor =
                 new BatchEventProcessor<>(ringBuffer, barrier, eventHandler);
 
@@ -597,13 +598,13 @@ public class Disruptor<T>
             {
                 batchEventProcessor.setExceptionHandler(exceptionHandler);
             }
-
+            // 添加到consumerRepository
             consumerRepository.add(batchEventProcessor, eventHandler, barrier);
             processorSequences[i] = batchEventProcessor.getSequence();
         }
 
         updateGatingSequencesForNextInChain(barrierSequences, processorSequences);
-
+        // 返回一个事件处理器组
         return new EventHandlerGroup<>(this, consumerRepository, processorSequences);
     }
 

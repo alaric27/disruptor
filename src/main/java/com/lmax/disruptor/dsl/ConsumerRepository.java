@@ -26,10 +26,21 @@ import java.util.*;
  */
 class ConsumerRepository<T> implements Iterable<ConsumerInfo>
 {
+    /**
+     * 事件消费者和事件处理器的对应关系
+     */
     private final Map<EventHandler<?>, EventProcessorInfo<T>> eventProcessorInfoByEventHandler =
         new IdentityHashMap<>();
+
+    /**
+     * 消费者序列号和消费者信息之间对应关系
+     */
     private final Map<Sequence, ConsumerInfo> eventProcessorInfoBySequence =
         new IdentityHashMap<>();
+
+    /**
+     * 消费者信息的集合
+     */
     private final Collection<ConsumerInfo> consumerInfos = new ArrayList<>();
 
     public void add(

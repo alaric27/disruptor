@@ -105,6 +105,7 @@ public final class WorkProcessor<T>
     @Override
     public void run()
     {
+        // 检查启动状态
         if (!running.compareAndSet(false, true))
         {
             throw new IllegalStateException("Thread is already running");
