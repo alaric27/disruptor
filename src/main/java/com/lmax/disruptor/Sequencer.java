@@ -71,6 +71,7 @@ public interface Sequencer extends Cursored, Sequenced
     SequenceBarrier newBarrier(Sequence... sequencesToTrack);
 
     /**
+     * 获取消费者中序列最小的序列号
      * Get the minimum sequence value from all of the gating sequences
      * added to this ringBuffer.
      *

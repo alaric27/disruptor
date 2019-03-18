@@ -28,6 +28,9 @@ import com.lmax.disruptor.util.Util;
  */
 public abstract class AbstractSequencer implements Sequencer
 {
+    /**
+     * 使用 AtomicReferenceFieldUpdater 线程安全地更新gatingSequences数组
+     */
     private static final AtomicReferenceFieldUpdater<AbstractSequencer, Sequence[]> SEQUENCE_UPDATER =
         AtomicReferenceFieldUpdater.newUpdater(AbstractSequencer.class, Sequence[].class, "gatingSequences");
 
@@ -42,12 +45,12 @@ public abstract class AbstractSequencer implements Sequencer
     protected final WaitStrategy waitStrategy;
 
     /**
-     * todo
+     * 代表当前已经生产完成的序号
      */
     protected final Sequence cursor = new Sequence(Sequencer.INITIAL_CURSOR_VALUE);
 
     /**
-     * todo
+     *  消费者的Sequence数组
      */
     protected volatile Sequence[] gatingSequences = new Sequence[0];
 
@@ -91,6 +94,7 @@ public abstract class AbstractSequencer implements Sequencer
     }
 
     /**
+     * 添加消费者的Sequence 到 gatingSequences中
      * @see Sequencer#addGatingSequences(Sequence...)
      */
     @Override

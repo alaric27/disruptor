@@ -42,6 +42,7 @@ public interface WaitStrategy
         throws AlertException, InterruptedException, TimeoutException;
 
     /**
+     * 唤醒所有的阻塞
      * Implementations should signal the waiting {@link EventProcessor}s that the cursor has advanced.
      */
     void signalAllWhenBlocking();

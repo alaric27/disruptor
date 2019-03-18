@@ -39,7 +39,18 @@ abstract class SingleProducerSequencerFields extends SingleProducerSequencerPad
     /**
      * Set to -1 as sequence starting point
      */
+
+    /**
+     * 用于记录生产者的序号值
+     */
     long nextValue = Sequence.INITIAL_VALUE;
+
+    /**
+     * 用于记录最后一次计算时消费者最小的序号值
+     * 该值的作用是用于判断是否需要再遍历计算一次消费者最小序号值,
+     * 为了避免做不必要的计算，提高性能
+     *
+     */
     long cachedValue = Sequence.INITIAL_VALUE;
 }
 
@@ -69,6 +80,7 @@ public final class SingleProducerSequencer extends SingleProducerSequencerFields
     }
 
     /**
+     * 是否有可用的空间
      * @see Sequencer#hasAvailableCapacity(int)
      */
     @Override
@@ -104,6 +116,7 @@ public final class SingleProducerSequencer extends SingleProducerSequencerFields
     }
 
     /**
+     * 获取下一个能用的序号
      * @see Sequencer#next()
      */
     @Override
@@ -113,6 +126,7 @@ public final class SingleProducerSequencer extends SingleProducerSequencerFields
     }
 
     /**
+     * 获取下一个能用的序号
      * @see Sequencer#next(int)
      */
     @Override
@@ -123,27 +137,43 @@ public final class SingleProducerSequencer extends SingleProducerSequencerFields
             throw new IllegalArgumentException("n must be > 0 and < bufferSize");
         }
 
+        // 当前序号的值
         long nextValue = this.nextValue;
 
+        // 新的序号的值
         long nextSequence = nextValue + n;
+
+        // wrapPoint等于生产者的序号减去环形数组的大小，
+        // 用于判断生产者的序号在环形数组中是否绕过了消费者最小的序号
         long wrapPoint = nextSequence - bufferSize;
         long cachedGatingSequence = this.cachedValue;
 
+        // 判断wrapPoint是否大于上一次计算时消费者的最小值
+        // 如果大于则进行一次从新计算判断，否则直接后续赋值操作
         if (wrapPoint > cachedGatingSequence || cachedGatingSequence > nextValue)
         {
-            cursor.setVolatile(nextValue);  // StoreLoad fence
+            /**
+             * cursor代表当前已经生产完成的序号，
+             * 这里就是采用UNSAFE.putLongVolatile()插入一个StoreLoad内存屏障，
+             * 主要保证cursor的真实值对所有的消费线程可见
+             */
+            cursor.setVolatile(nextValue);
 
             long minSequence;
+            // 如果生产者的序号超过了消费者的最小序号，就让生产者挂起1纳秒
             while (wrapPoint > (minSequence = Util.getMinimumSequence(gatingSequences, nextValue)))
             {
+                // 这里让生产者等待1纳秒，后续有可能使用等待策略
                 LockSupport.parkNanos(1L); // TODO: Use waitStrategy to spin?
             }
-
+            // 把消费者最小的序号值缓存到cachedValue中
             this.cachedValue = minSequence;
         }
 
+        // 把新的序号值赋值给nextValue
         this.nextValue = nextSequence;
 
+        // 返回新的序号值
         return nextSequence;
     }
 
@@ -200,12 +230,15 @@ public final class SingleProducerSequencer extends SingleProducerSequencerFields
     }
 
     /**
+     * 发布序号
      * @see Sequencer#publish(long)
      */
     @Override
     public void publish(long sequence)
     {
+        //修改cursor序号，消费者就可以进行消费
         cursor.set(sequence);
+        // 根据不同的等待策略唤醒消费线程
         waitStrategy.signalAllWhenBlocking();
     }
 

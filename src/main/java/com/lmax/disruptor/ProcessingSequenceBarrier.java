@@ -28,8 +28,14 @@ final class ProcessingSequenceBarrier implements SequenceBarrier
      * 等待策略
      */
     private final WaitStrategy waitStrategy;
+
+
     private final Sequence dependentSequence;
     private volatile boolean alerted = false;
+
+    /**
+     * 生产者已经生产的序列号
+     */
     private final Sequence cursorSequence;
 
     /**

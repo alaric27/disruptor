@@ -34,13 +34,41 @@ public final class BatchEventProcessor<T>
     private static final int HALTED = IDLE + 1;
     private static final int RUNNING = HALTED + 1;
 
+    /**
+     * 是否是运行状态
+     */
     private final AtomicInteger running = new AtomicInteger(IDLE);
+
+    /**
+     * 异常处理器
+     */
     private ExceptionHandler<? super T> exceptionHandler = new FatalExceptionHandler();
+
+    /**
+     * 数据提供者
+     */
     private final DataProvider<T> dataProvider;
+
+    /**
+     * 生产与消费的协调类
+     */
     private final SequenceBarrier sequenceBarrier;
+
+    /**
+     * 消费者
+     */
     private final EventHandler<? super T> eventHandler;
+
+    /**
+     * RingBuffer中最大的序号
+     */
     private final Sequence sequence = new Sequence(Sequencer.INITIAL_CURSOR_VALUE);
+
+    /**
+     * 超时处理器
+     */
     private final TimeoutHandler timeoutHandler;
+
     private final BatchStartAware batchStartAware;
 
     /**
@@ -152,25 +180,30 @@ public final class BatchEventProcessor<T>
     private void processEvents()
     {
         T event = null;
+        // 获取下一个的序号值
         long nextSequence = sequence.get() + 1L;
 
         while (true)
         {
             try
             {
+                // 消费者等待nextSequence，并返回当前可用的availableSequence
                 final long availableSequence = sequenceBarrier.waitFor(nextSequence);
                 if (batchStartAware != null)
                 {
                     batchStartAware.onBatchStart(availableSequence - nextSequence + 1);
                 }
 
+                // 遍历处理Event
                 while (nextSequence <= availableSequence)
                 {
+                    // 获取Event
                     event = dataProvider.get(nextSequence);
+                    // 处理Event
                     eventHandler.onEvent(event, nextSequence, nextSequence == availableSequence);
                     nextSequence++;
                 }
-
+                // 设置availableSequence 到 sequence
                 sequence.set(availableSequence);
             }
             catch (final TimeoutException e)

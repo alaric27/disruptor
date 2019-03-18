@@ -31,6 +31,7 @@ public final class BlockingWaitStrategy implements WaitStrategy
         throws AlertException, InterruptedException
     {
         long availableSequence;
+        // 如果生产者的序号，小于消费者当前要消费的序号则让消费者等待
         if (cursorSequence.get() < sequence)
         {
             synchronized (mutex)
@@ -43,6 +44,7 @@ public final class BlockingWaitStrategy implements WaitStrategy
             }
         }
 
+        // 如果生产者的序号，小于消费者当前要消费的序号则 则让循环体等待一段时间并打印相关信息
         while ((availableSequence = dependentSequence.get()) < sequence)
         {
             barrier.checkAlert();
@@ -57,6 +59,7 @@ public final class BlockingWaitStrategy implements WaitStrategy
     {
         synchronized (mutex)
         {
+            // 通知所有锁定的线程
             mutex.notifyAll();
         }
     }

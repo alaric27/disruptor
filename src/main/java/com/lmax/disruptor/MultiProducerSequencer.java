@@ -133,12 +133,17 @@ public final class MultiProducerSequencer extends AbstractSequencer
 
         do
         {
+            // 获取生产者已经生产的序列号
             current = cursor.get();
             next = current + n;
 
+            // wrapPoint等于生产者的序号减去环形数组的大小，
+            // 用于判断生产者的序号在环形数组中是否绕过了消费者最小的序号
             long wrapPoint = next - bufferSize;
             long cachedGatingSequence = gatingSequenceCache.get();
 
+            // 判断wrapPoint是否大于上一次计算时消费者的最小值
+            // 如果大于则进行一次从新计算判断，否则直接后续赋值操作
             if (wrapPoint > cachedGatingSequence || cachedGatingSequence > current)
             {
                 long gatingSequence = Util.getMinimumSequence(gatingSequences, current);
@@ -151,6 +156,7 @@ public final class MultiProducerSequencer extends AbstractSequencer
 
                 gatingSequenceCache.set(gatingSequence);
             }
+            // 设置cursor的值，这里采用CAS 加自旋的方式
             else if (cursor.compareAndSet(current, next))
             {
                 break;
@@ -229,7 +235,9 @@ public final class MultiProducerSequencer extends AbstractSequencer
     @Override
     public void publish(final long sequence)
     {
+        // 设置可消费的序号
         setAvailable(sequence);
+        // 通知消息者
         waitStrategy.signalAllWhenBlocking();
     }
 
@@ -270,6 +278,9 @@ public final class MultiProducerSequencer extends AbstractSequencer
         setAvailableBufferValue(calculateIndex(sequence), calculateAvailabilityFlag(sequence));
     }
 
+    /**
+     * 设置消费槽的状态
+     */
     private void setAvailableBufferValue(int index, int flag)
     {
         long bufferAddress = (index * SCALE) + BASE;

@@ -100,7 +100,6 @@ abstract class RingBufferFields<E> extends RingBufferPad
     /**
      * 使用EventFactory工厂填充数组，从BUFFER_PAD开始填充,填充bufferSize个大小
      * 相当于在entries的前后各空出来一个BUFFER_PAD大小的空间
-     * todo
      * @param eventFactory
      */
     private void fill(EventFactory<E> eventFactory)
@@ -402,6 +401,7 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
     }
 
     /**
+     * 获取消费者中序列最小的序列号
      * Get the minimum sequence value from all of the gating sequences
      * added to this ringBuffer.
      *

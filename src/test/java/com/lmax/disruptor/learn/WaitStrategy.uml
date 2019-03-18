@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.lmax.disruptor.WaitStrategy</OriginalElement>
+  <nodes>
+    <node x="201.0" y="99.0">com.lmax.disruptor.BusySpinWaitStrategy</node>
+    <node x="1097.0" y="99.0">com.lmax.disruptor.PhasedBackoffWaitStrategy</node>
+    <node x="601.0" y="99.0">com.lmax.disruptor.LiteBlockingWaitStrategy</node>
+    <node x="0.0" y="99.0">com.lmax.disruptor.BlockingWaitStrategy</node>
+    <node x="824.0" y="99.0">com.lmax.disruptor.LiteTimeoutBlockingWaitStrategy</node>
+    <node x="1538.0" y="99.0">com.lmax.disruptor.TimeoutBlockingWaitStrategy</node>
+    <node x="1338.0" y="99.0">com.lmax.disruptor.SleepingWaitStrategy</node>
+    <node x="886.5" y="0.0">com.lmax.disruptor.WaitStrategy</node>
+    <node x="407.0" y="99.0">com.lmax.disruptor.support.DummyWaitStrategy</node>
+    <node x="1789.0" y="99.0">com.lmax.disruptor.YieldingWaitStrategy</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.lmax.disruptor.YieldingWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="1877.5" y="49.0" />
+      <point x="1007.3888888888889" y="49.0" />
+      <point x="56.888888888888914" y="14.5" />
+    </edge>
+    <edge source="com.lmax.disruptor.BusySpinWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="294.0" y="59.0" />
+      <point x="907.8333333333334" y="59.0" />
+      <point x="-42.66666666666663" y="14.5" />
+    </edge>
+    <edge source="com.lmax.disruptor.PhasedBackoffWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="1207.5" y="79.0" />
+      <point x="964.7222222222222" y="79.0" />
+      <point x="14.222222222222172" y="14.5" />
+    </edge>
+    <edge source="com.lmax.disruptor.support.DummyWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="494.0" y="69.0" />
+      <point x="922.0555555555555" y="69.0" />
+      <point x="-28.444444444444457" y="14.5" />
+    </edge>
+    <edge source="com.lmax.disruptor.BlockingWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="90.5" y="49.0" />
+      <point x="893.6111111111111" y="49.0" />
+      <point x="-56.888888888888914" y="14.5" />
+    </edge>
+    <edge source="com.lmax.disruptor.SleepingWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="1428.0" y="69.0" />
+      <point x="978.9444444444443" y="69.0" />
+      <point x="28.444444444444343" y="14.5" />
+    </edge>
+    <edge source="com.lmax.disruptor.LiteBlockingWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="702.5" y="79.0" />
+      <point x="936.2777777777778" y="79.0" />
+      <point x="-14.222222222222172" y="14.5" />
+    </edge>
+    <edge source="com.lmax.disruptor.LiteTimeoutBlockingWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="com.lmax.disruptor.TimeoutBlockingWaitStrategy" target="com.lmax.disruptor.WaitStrategy">
+      <point x="0.0" y="-14.5" />
+      <point x="1653.5" y="59.0" />
+      <point x="993.1666666666667" y="59.0" />
+      <point x="42.66666666666674" y="14.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="983.0" y="63.99999999999994" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
