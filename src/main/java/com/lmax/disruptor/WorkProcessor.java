@@ -132,6 +132,9 @@ public final class WorkProcessor<T>
                     processedSequence = false;
                     do
                     {
+                        // 同组中多个消费线程有可能会争抢一个序号，使用CAS避免使用锁。
+                        // 同一组使用一个workSequence，WorkProcessor不断申请下一个可用序号，
+                        // 对workSequence设置成功才会实际消费。
                         nextSequence = workSequence.get() + 1L;
                         sequence.set(nextSequence - 1L);
                     }

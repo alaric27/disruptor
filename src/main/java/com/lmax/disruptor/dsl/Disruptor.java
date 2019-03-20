@@ -573,6 +573,12 @@ public class Disruptor<T>
         return false;
     }
 
+    /**
+     *
+     * @param barrierSequences   前置依赖的栅栏序号
+     * @param eventHandlers
+     * @return
+     */
     EventHandlerGroup<T> createEventProcessors(
         final Sequence[] barrierSequences,
         final EventHandler<? super T>[] eventHandlers)

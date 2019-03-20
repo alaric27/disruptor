@@ -60,7 +60,7 @@ public final class BatchEventProcessor<T>
     private final EventHandler<? super T> eventHandler;
 
     /**
-     * RingBuffer中最大的序号
+     * 记录当前消费者的消费进度
      */
     private final Sequence sequence = new Sequence(Sequencer.INITIAL_CURSOR_VALUE);
 

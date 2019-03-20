@@ -43,6 +43,13 @@ final class ProcessingSequenceBarrier implements SequenceBarrier
      */
     private final Sequencer sequencer;
 
+    /**
+     *
+     * @param sequencer  生产者序号生成者
+     * @param waitStrategy 等待策略
+     * @param cursorSequence 生产者生产进度标识
+     * @param dependentSequences 当前序号栅栏的依赖序号
+     */
     ProcessingSequenceBarrier(
         final Sequencer sequencer,
         final WaitStrategy waitStrategy,
@@ -52,10 +59,13 @@ final class ProcessingSequenceBarrier implements SequenceBarrier
         this.sequencer = sequencer;
         this.waitStrategy = waitStrategy;
         this.cursorSequence = cursorSequence;
+
+        // 如果依赖序号长度为零，则表示当前栅栏只需要保证不超过生产者序号即可
         if (0 == dependentSequences.length)
         {
             dependentSequence = cursorSequence;
         }
+        // 如果依赖序号不为空，则把依赖序号聚合为单一视图
         else
         {
             dependentSequence = new FixedSequenceGroup(dependentSequences);
