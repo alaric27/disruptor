@@ -60,6 +60,7 @@ final class ProcessingSequenceBarrier implements SequenceBarrier
         this.waitStrategy = waitStrategy;
         this.cursorSequence = cursorSequence;
 
+        // 这里是实现串并行消费的关键
         // 如果依赖序号长度为零，则表示当前栅栏只需要保证不超过生产者序号即可
         if (0 == dependentSequences.length)
         {

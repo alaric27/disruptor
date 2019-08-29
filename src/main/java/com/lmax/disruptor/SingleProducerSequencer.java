@@ -23,16 +23,14 @@ abstract class SingleProducerSequencerPad extends AbstractSequencer
 {
     protected long p1, p2, p3, p4, p5, p6, p7;
 
-    SingleProducerSequencerPad(int bufferSize, WaitStrategy waitStrategy)
-    {
+    SingleProducerSequencerPad(int bufferSize, WaitStrategy waitStrategy) {
         super(bufferSize, waitStrategy);
     }
 }
 
 abstract class SingleProducerSequencerFields extends SingleProducerSequencerPad
 {
-    SingleProducerSequencerFields(int bufferSize, WaitStrategy waitStrategy)
-    {
+    SingleProducerSequencerFields(int bufferSize, WaitStrategy waitStrategy) {
         super(bufferSize, waitStrategy);
     }
 
@@ -74,8 +72,7 @@ public final class SingleProducerSequencer extends SingleProducerSequencerFields
      * @param bufferSize   the size of the buffer that this will sequence over.
      * @param waitStrategy for those waiting on sequences.
      */
-    public SingleProducerSequencer(int bufferSize, WaitStrategy waitStrategy)
-    {
+    public SingleProducerSequencer(int bufferSize, WaitStrategy waitStrategy) {
         super(bufferSize, waitStrategy);
     }
 

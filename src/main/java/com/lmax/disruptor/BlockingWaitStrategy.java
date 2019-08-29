@@ -44,6 +44,7 @@ public final class BlockingWaitStrategy implements WaitStrategy
             }
         }
 
+        // 实现串并行消费的关键
         // 如果依赖序号，小于消费者当前要消费的序号则 则让循环体等待一段时间并打印相关信息
         // 如果可用的availableSequence 不小于想要获取的sequence 则结束循环，返回可用的availableSequence
         while ((availableSequence = dependentSequence.get()) < sequence)

@@ -299,6 +299,12 @@ public final class MultiProducerSequencer extends AbstractSequencer
         return UNSAFE.getIntVolatile(availableBuffer, bufferAddress) == flag;
     }
 
+    /**
+     * 获取最大可用的sequence
+     * @param lowerBound
+     * @param availableSequence The sequence to scan to.
+     * @return
+     */
     @Override
     public long getHighestPublishedSequence(long lowerBound, long availableSequence)
     {

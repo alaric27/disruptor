@@ -579,10 +579,7 @@ public class Disruptor<T>
      * @param eventHandlers
      * @return
      */
-    EventHandlerGroup<T> createEventProcessors(
-        final Sequence[] barrierSequences,
-        final EventHandler<? super T>[] eventHandlers)
-    {
+    EventHandlerGroup<T> createEventProcessors(final Sequence[] barrierSequences, final EventHandler<? super T>[] eventHandlers) {
         // 检查Disruptor是否启动，如果已经启动直接抛出异常
         checkNotStarted();
 
@@ -597,8 +594,7 @@ public class Disruptor<T>
             final EventHandler<? super T> eventHandler = eventHandlers[i];
 
             // 创建BatchEventProcessor
-            final BatchEventProcessor<T> batchEventProcessor =
-                new BatchEventProcessor<>(ringBuffer, barrier, eventHandler);
+            final BatchEventProcessor<T> batchEventProcessor = new BatchEventProcessor<>(ringBuffer, barrier, eventHandler);
 
             if (exceptionHandler != null)
             {
