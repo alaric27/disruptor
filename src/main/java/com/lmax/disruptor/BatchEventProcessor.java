@@ -189,7 +189,7 @@ public final class BatchEventProcessor<T>
             {
                 // 消费者等待nextSequence，并返回当前可用的availableSequence
                 final long availableSequence = sequenceBarrier.waitFor(nextSequence);
-                if (batchStartAware != null)
+                if (batchStartAware != null && availableSequence >= nextSequence)
                 {
                     batchStartAware.onBatchStart(availableSequence - nextSequence + 1);
                 }
