@@ -15,11 +15,11 @@
  */
 package com.lmax.disruptor.support;
 
-import java.util.concurrent.CountDownLatch;
-
 import com.lmax.disruptor.BatchStartAware;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.util.PaddedLong;
+
+import java.util.concurrent.CountDownLatch;
 
 public final class ValueAdditionEventHandler implements EventHandler<ValueEvent>, BatchStartAware
 {
@@ -58,7 +58,7 @@ public final class ValueAdditionEventHandler implements EventHandler<ValueEvent>
     }
 
     @Override
-    public void onBatchStart(long batchSize)
+    public void onBatchStart(final long batchSize)
     {
         batchesProcessed.increment();
     }

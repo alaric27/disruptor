@@ -15,7 +15,15 @@
  */
 package com.lmax.disruptor.sequenced;
 
-import static com.lmax.disruptor.RingBuffer.createSingleProducer;
+import com.lmax.disruptor.BatchEventProcessor;
+import com.lmax.disruptor.BlockingWaitStrategy;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.LifecycleAware;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.SequenceBarrier;
+import com.lmax.disruptor.support.ValueEvent;
+import com.lmax.disruptor.util.DaemonThreadFactory;
+import org.HdrHistogram.Histogram;
 
 import java.io.PrintStream;
 import java.util.concurrent.BrokenBarrierException;
@@ -24,11 +32,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.lmax.disruptor.*;
-import org.HdrHistogram.Histogram;
-
-import com.lmax.disruptor.support.ValueEvent;
-import com.lmax.disruptor.util.DaemonThreadFactory;
+import static com.lmax.disruptor.RingBuffer.createSingleProducer;
 
 /**
  * <pre>
@@ -60,8 +64,8 @@ import com.lmax.disruptor.util.DaemonThreadFactory;
  * SB2 - PongBarrier
  *
  * </pre>
- * <p>
- * Note: <b>This test is only useful on a system using an invariant TSC in user space from the System.nanoTime() call.</b>
+ *
+ * <p>Note: <b>This test is only useful on a system using an invariant TSC in user space from the System.nanoTime() call.</b>
  */
 public final class PingPongSequencedLatencyTest
 {
@@ -82,12 +86,12 @@ public final class PingPongSequencedLatencyTest
     private final SequenceBarrier pongBarrier = pongBuffer.newBarrier();
     private final Pinger pinger = new Pinger(pingBuffer, ITERATIONS, PAUSE_NANOS);
     private final BatchEventProcessor<ValueEvent> pingProcessor =
-        new BatchEventProcessor<ValueEvent>(pongBuffer, pongBarrier, pinger);
+            new BatchEventProcessor<>(pongBuffer, pongBarrier, pinger);
 
     private final SequenceBarrier pingBarrier = pingBuffer.newBarrier();
     private final Ponger ponger = new Ponger(pongBuffer);
     private final BatchEventProcessor<ValueEvent> pongProcessor =
-        new BatchEventProcessor<ValueEvent>(pingBuffer, pingBarrier, ponger);
+            new BatchEventProcessor<>(pingBuffer, pingBarrier, ponger);
 
     {
         pingBuffer.addGatingSequences(pongProcessor.getSequence());

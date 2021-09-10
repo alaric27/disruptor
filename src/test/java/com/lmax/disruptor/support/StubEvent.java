@@ -22,23 +22,18 @@ public final class StubEvent
 {
     private int value;
     private String testString;
-    public static final EventTranslatorTwoArg<StubEvent, Integer, String> TRANSLATOR =
-        new EventTranslatorTwoArg<StubEvent, Integer, String>()
-        {
-            @Override
-            public void translateTo(StubEvent event, long sequence, Integer arg0, String arg1)
+    public static final EventTranslatorTwoArg<StubEvent, Integer, String> TRANSLATOR = (event, sequence, arg0, arg1) ->
             {
                 event.setValue(arg0);
                 event.setTestString(arg1);
-            }
-        };
+            };
 
-    public StubEvent(int i)
+    public StubEvent(final int i)
     {
         this.value = i;
     }
 
-    public void copy(StubEvent event)
+    public void copy(final StubEvent event)
     {
         value = event.value;
     }
@@ -48,7 +43,7 @@ public final class StubEvent
         return value;
     }
 
-    public void setValue(int value)
+    public void setValue(final int value)
     {
         this.value = value;
     }
@@ -63,40 +58,34 @@ public final class StubEvent
         this.testString = testString;
     }
 
-    public static final EventFactory<StubEvent> EVENT_FACTORY = new EventFactory<StubEvent>()
+    public static final EventFactory<StubEvent> EVENT_FACTORY = () -> new StubEvent(-1);
+
+    @Override
+    public boolean equals(final Object o)
     {
-        public StubEvent newInstance()
+        if (this == o)
         {
-            return new StubEvent(-1);
+            return true;
         }
-    };
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+
+        final StubEvent stubEvent = (StubEvent) o;
+
+        if (value != stubEvent.value)
+        {
+            return false;
+        }
+        return testString != null ? testString.equals(stubEvent.testString) : stubEvent.testString == null;
+    }
 
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + value;
+        int result = value;
+        result = 31 * result + (testString != null ? testString.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
-            return true;
-        }
-        if (obj == null)
-        {
-            return false;
-        }
-        if (getClass() != obj.getClass())
-        {
-            return false;
-        }
-        StubEvent other = (StubEvent) obj;
-
-        return value == other.value;
     }
 }

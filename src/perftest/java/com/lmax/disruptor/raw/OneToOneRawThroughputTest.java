@@ -15,12 +15,19 @@
  */
 package com.lmax.disruptor.raw;
 
+import com.lmax.disruptor.AbstractPerfTestDisruptor;
+import com.lmax.disruptor.PerfTestContext;
+import com.lmax.disruptor.Sequence;
+import com.lmax.disruptor.SequenceBarrier;
+import com.lmax.disruptor.Sequenced;
+import com.lmax.disruptor.Sequencer;
+import com.lmax.disruptor.SingleProducerSequencer;
+import com.lmax.disruptor.YieldingWaitStrategy;
+import com.lmax.disruptor.util.DaemonThreadFactory;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.lmax.disruptor.*;
-import com.lmax.disruptor.util.DaemonThreadFactory;
 
 /**
  * <pre>
@@ -113,7 +120,7 @@ public final class OneToOneRawThroughputTest extends AbstractPerfTestDisruptor
         return perfTestContext;
     }
 
-    private void waitForEventProcessorSequence(long expectedCount) throws InterruptedException
+    private void waitForEventProcessorSequence(final long expectedCount) throws InterruptedException
     {
         while (myRunnable.sequence.get() != expectedCount)
         {
@@ -128,12 +135,12 @@ public final class OneToOneRawThroughputTest extends AbstractPerfTestDisruptor
         Sequence sequence = new Sequence(-1);
         private final SequenceBarrier barrier;
 
-        MyRunnable(Sequencer sequencer)
+        MyRunnable(final Sequencer sequencer)
         {
             this.barrier = sequencer.newBarrier();
         }
 
-        public void reset(CountDownLatch latch, long expectedCount)
+        public void reset(final CountDownLatch latch, final long expectedCount)
         {
             this.latch = latch;
             this.expectedCount = expectedCount;
@@ -164,7 +171,7 @@ public final class OneToOneRawThroughputTest extends AbstractPerfTestDisruptor
         }
     }
 
-    public static void main(String[] args) throws Exception
+    public static void main(final String[] args) throws Exception
     {
         OneToOneRawThroughputTest test = new OneToOneRawThroughputTest();
         test.testImplementations();

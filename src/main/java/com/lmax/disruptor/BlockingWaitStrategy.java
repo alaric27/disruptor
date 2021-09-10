@@ -15,19 +15,18 @@
  */
 package com.lmax.disruptor;
 
-import com.lmax.disruptor.util.ThreadHints;
-
 /**
  * Blocking strategy that uses a lock and condition variable for {@link EventProcessor}s waiting on a barrier.
- * <p>
- * This strategy can be used when throughput and low-latency are not as important as CPU resource.
+
+ *
+ * <p>This strategy can be used when throughput and low-latency are not as important as CPU resource.
  */
 public final class BlockingWaitStrategy implements WaitStrategy
 {
     private final Object mutex = new Object();
 
     @Override
-    public long waitFor(long sequence, Sequence cursorSequence, Sequence dependentSequence, SequenceBarrier barrier)
+    public long waitFor(final long sequence, final Sequence cursorSequence, final Sequence dependentSequence, final SequenceBarrier barrier)
         throws AlertException, InterruptedException
     {
         long availableSequence;
@@ -50,7 +49,7 @@ public final class BlockingWaitStrategy implements WaitStrategy
         while ((availableSequence = dependentSequence.get()) < sequence)
         {
             barrier.checkAlert();
-            ThreadHints.onSpinWait();
+            Thread.onSpinWait();
         }
 
         return availableSequence;

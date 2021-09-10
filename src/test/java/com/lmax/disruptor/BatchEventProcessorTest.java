@@ -16,28 +16,38 @@
 package com.lmax.disruptor;
 
 import com.lmax.disruptor.support.StubEvent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static com.lmax.disruptor.RingBuffer.createMultiProducer;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class BatchEventProcessorTest
 {
     private final RingBuffer<StubEvent> ringBuffer = createMultiProducer(StubEvent.EVENT_FACTORY, 16);
     private final SequenceBarrier sequenceBarrier = ringBuffer.newBarrier();
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionOnSettingNullExceptionHandler()
     {
-        final BatchEventProcessor<StubEvent> batchEventProcessor = new BatchEventProcessor<StubEvent>(
-            ringBuffer, sequenceBarrier, new ExceptionEventHandler());
-        batchEventProcessor.setExceptionHandler(null);
+        assertThrows(NullPointerException.class, () ->
+        {
+            final BatchEventProcessor<StubEvent> batchEventProcessor = new BatchEventProcessor<>(
+                    ringBuffer, sequenceBarrier, new ExceptionEventHandler());
+            batchEventProcessor.setExceptionHandler(null);
+        });
     }
 
     @Test
@@ -46,8 +56,8 @@ public final class BatchEventProcessorTest
     {
         CountDownLatch eventLatch = new CountDownLatch(3);
         LatchEventHandler eventHandler = new LatchEventHandler(eventLatch);
-        final BatchEventProcessor<StubEvent> batchEventProcessor = new BatchEventProcessor<StubEvent>(
-            ringBuffer, sequenceBarrier, eventHandler);
+        final BatchEventProcessor<StubEvent> batchEventProcessor = new BatchEventProcessor<>(
+                ringBuffer, sequenceBarrier, eventHandler);
 
         ringBuffer.addGatingSequences(batchEventProcessor.getSequence());
 
@@ -70,8 +80,8 @@ public final class BatchEventProcessorTest
     {
         CountDownLatch exceptionLatch = new CountDownLatch(1);
         LatchExceptionHandler latchExceptionHandler = new LatchExceptionHandler(exceptionLatch);
-        final BatchEventProcessor<StubEvent> batchEventProcessor = new BatchEventProcessor<StubEvent>(
-            ringBuffer, sequenceBarrier, new ExceptionEventHandler());
+        final BatchEventProcessor<StubEvent> batchEventProcessor = new BatchEventProcessor<>(
+                ringBuffer, sequenceBarrier, new ExceptionEventHandler());
         ringBuffer.addGatingSequences(batchEventProcessor.getSequence());
 
         batchEventProcessor.setExceptionHandler(latchExceptionHandler);
@@ -91,13 +101,13 @@ public final class BatchEventProcessorTest
     {
         private final CountDownLatch latch;
 
-        LatchEventHandler(CountDownLatch latch)
+        LatchEventHandler(final CountDownLatch latch)
         {
             this.latch = latch;
         }
 
         @Override
-        public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception
+        public void onEvent(final StubEvent event, final long sequence, final boolean endOfBatch) throws Exception
         {
             latch.countDown();
         }
@@ -107,25 +117,25 @@ public final class BatchEventProcessorTest
     {
         private final CountDownLatch latch;
 
-        LatchExceptionHandler(CountDownLatch latch)
+        LatchExceptionHandler(final CountDownLatch latch)
         {
             this.latch = latch;
         }
 
         @Override
-        public void handleEventException(Throwable ex, long sequence, StubEvent event)
+        public void handleEventException(final Throwable ex, final long sequence, final StubEvent event)
         {
             latch.countDown();
         }
 
         @Override
-        public void handleOnStartException(Throwable ex)
+        public void handleOnStartException(final Throwable ex)
         {
 
         }
 
         @Override
-        public void handleOnShutdownException(Throwable ex)
+        public void handleOnShutdownException(final Throwable ex)
         {
 
         }
@@ -134,7 +144,7 @@ public final class BatchEventProcessorTest
     private static class ExceptionEventHandler implements EventHandler<StubEvent>
     {
         @Override
-        public void onEvent(StubEvent event, long sequence, boolean endOfBatch) throws Exception
+        public void onEvent(final StubEvent event, final long sequence, final boolean endOfBatch) throws Exception
         {
             throw new NullPointerException(null);
         }
@@ -144,7 +154,7 @@ public final class BatchEventProcessorTest
     public void reportAccurateBatchSizesAtBatchStartTime()
         throws Exception
     {
-        final List<Long> batchSizes = new ArrayList<Long>();
+        final List<Long> batchSizes = new ArrayList<>();
         final CountDownLatch eventLatch = new CountDownLatch(6);
 
         final class LoopbackEventHandler
@@ -152,13 +162,13 @@ public final class BatchEventProcessorTest
         {
 
             @Override
-            public void onBatchStart(long batchSize)
+            public void onBatchStart(final long batchSize)
             {
                 batchSizes.add(batchSize);
             }
 
             @Override
-            public void onEvent(StubEvent event, long sequence, boolean endOfBatch)
+            public void onEvent(final StubEvent event, final long sequence, final boolean endOfBatch)
                 throws Exception
             {
                 if (!endOfBatch)
@@ -170,8 +180,8 @@ public final class BatchEventProcessorTest
         }
 
         final BatchEventProcessor<StubEvent> batchEventProcessor =
-            new BatchEventProcessor<StubEvent>(
-                ringBuffer, sequenceBarrier, new LoopbackEventHandler());
+                new BatchEventProcessor<>(
+                        ringBuffer, sequenceBarrier, new LoopbackEventHandler());
 
         ringBuffer.publish(ringBuffer.next());
         ringBuffer.publish(ringBuffer.next());
@@ -194,14 +204,7 @@ public final class BatchEventProcessorTest
         final SingleProducerSequencer sequencer = new SingleProducerSequencer(8, waitStrategy);
         final ProcessingSequenceBarrier barrier = new ProcessingSequenceBarrier(
             sequencer, waitStrategy, new Sequence(-1), new Sequence[0]);
-        DataProvider<Object> dp = new DataProvider<Object>()
-        {
-            @Override
-            public Object get(long sequence)
-            {
-                return null;
-            }
-        };
+        DataProvider<Object> dp = sequence -> null;
 
         final LatchLifeCycleHandler h1 = new LatchLifeCycleHandler();
         final BatchEventProcessor p1 = new BatchEventProcessor<>(dp, barrier, h1);
@@ -245,7 +248,7 @@ public final class BatchEventProcessorTest
         private final CountDownLatch stopLatch = new CountDownLatch(1);
 
         @Override
-        public void onEvent(Object event, long sequence, boolean endOfBatch) throws Exception
+        public void onEvent(final Object event, final long sequence, final boolean endOfBatch) throws Exception
         {
 
         }
@@ -262,13 +265,13 @@ public final class BatchEventProcessorTest
             stopLatch.countDown();
         }
 
-        public boolean awaitStart(long time, TimeUnit unit) throws InterruptedException
+        public boolean awaitStart(final long time, final TimeUnit unit) throws InterruptedException
         {
             return startLatch.await(time, unit);
         }
 
 
-        public boolean awaitStop(long time, TimeUnit unit) throws InterruptedException
+        public boolean awaitStop(final long time, final TimeUnit unit) throws InterruptedException
         {
             return stopLatch.await(time, unit);
         }
@@ -306,13 +309,13 @@ public final class BatchEventProcessorTest
         private SequenceBarrier delegate;
         private boolean suppress = true;
 
-        DelegatingSequenceBarrier(SequenceBarrier delegate)
+        DelegatingSequenceBarrier(final SequenceBarrier delegate)
         {
             this.delegate = delegate;
         }
 
         @Override
-        public long waitFor(long sequence) throws AlertException, InterruptedException, TimeoutException
+        public long waitFor(final long sequence) throws AlertException, InterruptedException, TimeoutException
         {
             long result = suppress ? sequence - 1 : delegate.waitFor(sequence);
             suppress = !suppress;
@@ -354,13 +357,13 @@ public final class BatchEventProcessorTest
     {
         final Map<Long, Integer> batchSizeToCountMap = new HashMap<>();
 
-        BatchAwareEventHandler(CountDownLatch latch)
+        BatchAwareEventHandler(final CountDownLatch latch)
         {
             super(latch);
         }
 
         @Override
-        public void onBatchStart(long batchSize)
+        public void onBatchStart(final long batchSize)
         {
             final Integer currentCount = batchSizeToCountMap.get(batchSize);
             final int nextCount = null == currentCount ? 1 : currentCount + 1;

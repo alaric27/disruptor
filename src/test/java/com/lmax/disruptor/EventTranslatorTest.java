@@ -16,8 +16,9 @@
 package com.lmax.disruptor;
 
 import com.lmax.disruptor.support.StubEvent;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class EventTranslatorTest
 {
@@ -31,7 +32,7 @@ public final class EventTranslatorTest
 
         eventTranslator.translateTo(event, 0);
 
-        Assert.assertEquals(TEST_VALUE, event.getTestString());
+        assertEquals(TEST_VALUE, event.getTestString());
     }
 
     public static final class ExampleEventTranslator
@@ -45,7 +46,7 @@ public final class EventTranslatorTest
         }
 
         @Override
-        public void translateTo(final StubEvent event, long sequence)
+        public void translateTo(final StubEvent event, final long sequence)
         {
             event.setTestString(testValue);
         }

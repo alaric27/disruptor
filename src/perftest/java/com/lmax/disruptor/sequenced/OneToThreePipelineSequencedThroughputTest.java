@@ -15,29 +15,32 @@
  */
 package com.lmax.disruptor.sequenced;
 
-import static com.lmax.disruptor.RingBuffer.createSingleProducer;
-import static com.lmax.disruptor.support.PerfTestUtil.failIfNot;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import com.lmax.disruptor.*;
+import com.lmax.disruptor.AbstractPerfTestDisruptor;
+import com.lmax.disruptor.BatchEventProcessor;
+import com.lmax.disruptor.PerfTestContext;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.SequenceBarrier;
+import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.support.FunctionEvent;
 import com.lmax.disruptor.support.FunctionEventHandler;
 import com.lmax.disruptor.support.FunctionStep;
 import com.lmax.disruptor.util.DaemonThreadFactory;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static com.lmax.disruptor.RingBuffer.createSingleProducer;
+import static com.lmax.disruptor.support.PerfTestUtil.failIfNot;
+
 /**
- * <pre>
- *
  * Pipeline a series of stages from a publisher to ultimate event processor.
  * Each event processor depends on the output of the event processor.
  *
+ * <pre>{@code
  * +----+    +-----+    +-----+    +-----+
  * | P1 |--->| EP1 |--->| EP2 |--->| EP3 |
  * +----+    +-----+    +-----+    +-----+
- *
  *
  * Disruptor:
  * ==========
@@ -51,7 +54,6 @@ import com.lmax.disruptor.util.DaemonThreadFactory;
  *      claim   ^  get    |   waitFor           |   waitFor           |  waitFor
  *              |         |                     |                     |
  *              +---------+---------------------+---------------------+
- *        </pre>
  *
  * P1  - Publisher 1
  * RB  - RingBuffer
@@ -61,8 +63,7 @@ import com.lmax.disruptor.util.DaemonThreadFactory;
  * EP2 - EventProcessor 2
  * SB3 - SequenceBarrier 3
  * EP3 - EventProcessor 3
- *
- * </pre>
+ * }</pre>
  */
 public final class OneToThreePipelineSequencedThroughputTest extends AbstractPerfTestDisruptor
 {
@@ -100,17 +101,17 @@ public final class OneToThreePipelineSequencedThroughputTest extends AbstractPer
     private final SequenceBarrier stepOneSequenceBarrier = ringBuffer.newBarrier();
     private final FunctionEventHandler stepOneFunctionHandler = new FunctionEventHandler(FunctionStep.ONE);
     private final BatchEventProcessor<FunctionEvent> stepOneBatchProcessor =
-        new BatchEventProcessor<FunctionEvent>(ringBuffer, stepOneSequenceBarrier, stepOneFunctionHandler);
+            new BatchEventProcessor<>(ringBuffer, stepOneSequenceBarrier, stepOneFunctionHandler);
 
     private final SequenceBarrier stepTwoSequenceBarrier = ringBuffer.newBarrier(stepOneBatchProcessor.getSequence());
     private final FunctionEventHandler stepTwoFunctionHandler = new FunctionEventHandler(FunctionStep.TWO);
     private final BatchEventProcessor<FunctionEvent> stepTwoBatchProcessor =
-        new BatchEventProcessor<FunctionEvent>(ringBuffer, stepTwoSequenceBarrier, stepTwoFunctionHandler);
+            new BatchEventProcessor<>(ringBuffer, stepTwoSequenceBarrier, stepTwoFunctionHandler);
 
     private final SequenceBarrier stepThreeSequenceBarrier = ringBuffer.newBarrier(stepTwoBatchProcessor.getSequence());
     private final FunctionEventHandler stepThreeFunctionHandler = new FunctionEventHandler(FunctionStep.THREE);
     private final BatchEventProcessor<FunctionEvent> stepThreeBatchProcessor =
-        new BatchEventProcessor<FunctionEvent>(ringBuffer, stepThreeSequenceBarrier, stepThreeFunctionHandler);
+            new BatchEventProcessor<>(ringBuffer, stepThreeSequenceBarrier, stepThreeFunctionHandler);
 
     {
         ringBuffer.addGatingSequences(stepThreeBatchProcessor.getSequence());
@@ -160,7 +161,7 @@ public final class OneToThreePipelineSequencedThroughputTest extends AbstractPer
         return perfTestContext;
     }
 
-    public static void main(String[] args) throws Exception
+    public static void main(final String[] args) throws Exception
     {
         new OneToThreePipelineSequencedThroughputTest().testImplementations();
     }

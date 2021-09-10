@@ -3,61 +3,72 @@ package com.lmax.disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.support.DummyWaitStrategy;
 import com.lmax.disruptor.util.DaemonThreadFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@RunWith(Parameterized.class)
 public class SequencerTest
 {
     private static final int BUFFER_SIZE = 16;
     private final ExecutorService executor = Executors.newSingleThreadExecutor(DaemonThreadFactory.INSTANCE);
-
-    private final Sequencer sequencer;
     private final Sequence gatingSequence = new Sequence();
-    private final ProducerType producerType;
 
-    public SequencerTest(ProducerType producerType, WaitStrategy waitStrategy)
+    private static Stream<Arguments> sequencerGenerator()
     {
-        this.producerType = producerType;
-        this.sequencer = newProducer(producerType, BUFFER_SIZE, waitStrategy);
+        return Stream.of(
+                arguments(newProducer(ProducerType.SINGLE, new BlockingWaitStrategy())),
+                arguments(newProducer(ProducerType.MULTI, new BlockingWaitStrategy()))
+        );
     }
 
-    @Parameters
-    public static Collection<Object[]> generateData()
+    private static Stream<Arguments> producerTypeGenerator()
     {
-        Object[][] allocators =
-            {
-                {ProducerType.SINGLE, new BlockingWaitStrategy()},
-                {ProducerType.MULTI, new BlockingWaitStrategy()},
-            };
-        return Arrays.asList(allocators);
+        return Stream.of(arguments(ProducerType.SINGLE), arguments(ProducerType.MULTI));
     }
 
-    @Test
-    public void shouldStartWithInitialValue()
+    private static Sequencer newProducer(final ProducerType producerType, final WaitStrategy waitStrategy)
+    {
+        switch (producerType)
+        {
+            case SINGLE:
+                return new SingleProducerSequencer(BUFFER_SIZE, waitStrategy);
+            case MULTI:
+                return new MultiProducerSequencer(BUFFER_SIZE, waitStrategy);
+            default:
+                throw new IllegalStateException(producerType.toString());
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldStartWithInitialValue(final Sequencer sequencer)
     {
         assertEquals(0, sequencer.next());
     }
 
-    @Test
-    public void shouldBatchClaim()
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldBatchClaim(final Sequencer sequencer)
     {
         assertEquals(3, sequencer.next(4));
     }
 
-    @Test
-    public void shouldIndicateHasAvailableCapacity()
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldIndicateHasAvailableCapacity(final Sequencer sequencer)
     {
         sequencer.addGatingSequences(gatingSequence);
 
@@ -71,8 +82,9 @@ public class SequencerTest
         assertFalse(sequencer.hasAvailableCapacity(BUFFER_SIZE));
     }
 
-    @Test
-    public void shouldIndicateNoAvailableCapacity()
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldIndicateNoAvailableCapacity(final Sequencer sequencer)
     {
         sequencer.addGatingSequences(gatingSequence);
         long sequence = sequencer.next(BUFFER_SIZE);
@@ -81,8 +93,9 @@ public class SequencerTest
         assertFalse(sequencer.hasAvailableCapacity(1));
     }
 
-    @Test
-    public void shouldHoldUpPublisherWhenBufferIsFull()
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldHoldUpPublisherWhenBufferIsFull(final Sequencer sequencer)
         throws InterruptedException
     {
         sequencer.addGatingSequences(gatingSequence);
@@ -93,13 +106,12 @@ public class SequencerTest
         final CountDownLatch doneLatch = new CountDownLatch(1);
 
         final long expectedFullSequence = Sequencer.INITIAL_CURSOR_VALUE + sequencer.getBufferSize();
-        assertThat(sequencer.getCursor(), is(expectedFullSequence));
+        assertThat(
+            sequencer.getHighestPublishedSequence(Sequencer.INITIAL_CURSOR_VALUE + 1, sequencer.getCursor()),
+            is(expectedFullSequence));
 
         executor.submit(
-            new Runnable()
-            {
-                @Override
-                public void run()
+                () ->
                 {
                     waitingLatch.countDown();
 
@@ -107,31 +119,37 @@ public class SequencerTest
                     sequencer.publish(next);
 
                     doneLatch.countDown();
-                }
-            });
+                });
 
         waitingLatch.await();
-        assertThat(sequencer.getCursor(), is(expectedFullSequence));
+        assertThat(
+            sequencer.getHighestPublishedSequence(expectedFullSequence, sequencer.getCursor()),
+            is(expectedFullSequence));
 
         gatingSequence.set(Sequencer.INITIAL_CURSOR_VALUE + 1L);
 
         doneLatch.await();
-        assertThat(sequencer.getCursor(), is(expectedFullSequence + 1L));
+        assertThat(sequencer.getHighestPublishedSequence(expectedFullSequence, sequencer.getCursor()), is(expectedFullSequence + 1L));
     }
 
-    @Test(expected = InsufficientCapacityException.class)
-    public void shouldThrowInsufficientCapacityExceptionWhenSequencerIsFull() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldThrowInsufficientCapacityExceptionWhenSequencerIsFull(final Sequencer sequencer) throws Exception
     {
-        sequencer.addGatingSequences(gatingSequence);
-        for (int i = 0; i < BUFFER_SIZE; i++)
+        assertThrows(InsufficientCapacityException.class, () ->
         {
-            sequencer.next();
-        }
-        sequencer.tryNext();
+            sequencer.addGatingSequences(gatingSequence);
+            for (int i = 0; i < BUFFER_SIZE; i++)
+            {
+                sequencer.next();
+            }
+            sequencer.tryNext();
+        });
     }
 
-    @Test
-    public void shouldCalculateRemainingCapacity() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldCalculateRemainingCapacity(final Sequencer sequencer) throws Exception
     {
         sequencer.addGatingSequences(gatingSequence);
 
@@ -143,8 +161,9 @@ public class SequencerTest
         }
     }
 
-    @Test
-    public void shouldNotBeAvailableUntilPublished() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldNotBeAvailableUntilPublished(final Sequencer sequencer) throws Exception
     {
         long next = sequencer.next(6);
 
@@ -163,22 +182,24 @@ public class SequencerTest
         assertThat(sequencer.isAvailable(6), is(false));
     }
 
-    @Test
-    public void shouldNotifyWaitStrategyOnPublish() throws Exception
+    @ParameterizedTest
+    @MethodSource("producerTypeGenerator")
+    public void shouldNotifyWaitStrategyOnPublish(final ProducerType producerType) throws Exception
     {
         final DummyWaitStrategy waitStrategy = new DummyWaitStrategy();
-        final Sequenced sequencer = newProducer(producerType, BUFFER_SIZE, waitStrategy);
+        final Sequenced sequencer = newProducer(producerType, waitStrategy);
 
         sequencer.publish(sequencer.next());
 
         assertThat(waitStrategy.signalAllWhenBlockingCalls, is(1));
     }
 
-    @Test
-    public void shouldNotifyWaitStrategyOnPublishBatch() throws Exception
+    @ParameterizedTest
+    @MethodSource("producerTypeGenerator")
+    public void shouldNotifyWaitStrategyOnPublishBatch(final ProducerType producerType) throws Exception
     {
         final DummyWaitStrategy waitStrategy = new DummyWaitStrategy();
-        final Sequenced sequencer = newProducer(producerType, BUFFER_SIZE, waitStrategy);
+        final Sequenced sequencer = newProducer(producerType, waitStrategy);
 
         long next = sequencer.next(4);
         sequencer.publish(next - (4 - 1), next);
@@ -186,8 +207,10 @@ public class SequencerTest
         assertThat(waitStrategy.signalAllWhenBlockingCalls, is(1));
     }
 
-    @Test
-    public void shouldWaitOnPublication() throws Exception
+
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldWaitOnPublication(final Sequencer sequencer) throws Exception
     {
         SequenceBarrier barrier = sequencer.newBarrier();
 
@@ -210,8 +233,9 @@ public class SequencerTest
         assertThat(barrier.waitFor(-1), is(next));
     }
 
-    @Test
-    public void shouldTryNext() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldTryNext(final Sequencer sequencer) throws Exception
     {
         sequencer.addGatingSequences(gatingSequence);
 
@@ -220,19 +244,12 @@ public class SequencerTest
             sequencer.publish(sequencer.tryNext());
         }
 
-        try
-        {
-            sequencer.tryNext();
-            fail("Should of thrown: " + InsufficientCapacityException.class.getSimpleName());
-        }
-        catch (InsufficientCapacityException e)
-        {
-            // No-op
-        }
+        assertThrows(InsufficientCapacityException.class, sequencer::tryNext);
     }
 
-    @Test
-    public void shouldClaimSpecificSequence() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldClaimSpecificSequence(final Sequencer sequencer) throws Exception
     {
         long sequence = 14L;
 
@@ -241,40 +258,58 @@ public class SequencerTest
         assertThat(sequencer.next(), is(sequence + 1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAllowBulkNextLessThanZero() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldNotAllowBulkNextLessThanZero(final Sequencer sequencer) throws Exception
     {
-        sequencer.next(-1);
+        assertThrows(IllegalArgumentException.class, () -> sequencer.next(-1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAllowBulkNextOfZero() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldNotAllowBulkNextOfZero(final Sequencer sequencer) throws Exception
     {
-        sequencer.next(0);
+        assertThrows(IllegalArgumentException.class, () -> sequencer.next(0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAllowBulkTryNextLessThanZero() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldNotAllowBulkTryNextLessThanZero(final Sequencer sequencer) throws Exception
     {
-        sequencer.tryNext(-1);
+        assertThrows(IllegalArgumentException.class, () -> sequencer.tryNext(-1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAllowBulkTryNextOfZero() throws Exception
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    public void shouldNotAllowBulkTryNextOfZero(final Sequencer sequencer) throws Exception
     {
-        sequencer.tryNext(0);
+        assertThrows(IllegalArgumentException.class, () -> sequencer.tryNext(0));
     }
 
-    private Sequencer newProducer(ProducerType producerType, int bufferSize, WaitStrategy waitStrategy)
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    void sequencesBecomeAvailableAfterAPublish(final Sequencer sequencer)
     {
-        switch (producerType)
+        final long seq = sequencer.next();
+        assertFalse(sequencer.isAvailable(seq));
+        sequencer.publish(seq);
+
+        assertTrue(sequencer.isAvailable(seq));
+    }
+
+    @ParameterizedTest
+    @MethodSource("sequencerGenerator")
+    void sequencesBecomeUnavailableAfterWrapping(final Sequencer sequencer)
+    {
+        final long seq = sequencer.next();
+        sequencer.publish(seq);
+        assertTrue(sequencer.isAvailable(seq));
+
+        for (int i = 0; i < BUFFER_SIZE; i++)
         {
-            case SINGLE:
-                return new SingleProducerSequencer(bufferSize, waitStrategy);
-            case MULTI:
-                return new MultiProducerSequencer(bufferSize, waitStrategy);
-            default:
-                throw new IllegalStateException(producerType.toString());
+            sequencer.publish(sequencer.next());
         }
+
+        assertFalse(sequencer.isAvailable(seq));
     }
 }

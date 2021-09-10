@@ -15,7 +15,11 @@
  */
 package com.lmax.disruptor.translator;
 
-import com.lmax.disruptor.*;
+import com.lmax.disruptor.AbstractPerfTestDisruptor;
+import com.lmax.disruptor.EventTranslatorOneArg;
+import com.lmax.disruptor.PerfTestContext;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.support.PerfTestUtil;
@@ -72,11 +76,11 @@ public final class OneToOneTranslatorThroughputTest extends AbstractPerfTestDisr
     public OneToOneTranslatorThroughputTest()
     {
         Disruptor<ValueEvent> disruptor =
-            new Disruptor<ValueEvent>(
-                ValueEvent.EVENT_FACTORY,
-                BUFFER_SIZE, DaemonThreadFactory.INSTANCE,
-                ProducerType.SINGLE,
-                new YieldingWaitStrategy());
+                new Disruptor<>(
+                        ValueEvent.EVENT_FACTORY,
+                        BUFFER_SIZE, DaemonThreadFactory.INSTANCE,
+                        ProducerType.SINGLE,
+                        new YieldingWaitStrategy());
         disruptor.handleEventsWith(handler);
         this.ringBuffer = disruptor.start();
     }
@@ -124,13 +128,13 @@ public final class OneToOneTranslatorThroughputTest extends AbstractPerfTestDisr
         private static final Translator INSTANCE = new Translator();
 
         @Override
-        public void translateTo(ValueEvent event, long sequence, MutableLong arg0)
+        public void translateTo(final ValueEvent event, final long sequence, final MutableLong arg0)
         {
             event.setValue(arg0.get());
         }
     }
 
-    private void waitForEventProcessorSequence(long expectedCount) throws InterruptedException
+    private void waitForEventProcessorSequence(final long expectedCount) throws InterruptedException
     {
         while (ringBuffer.getMinimumGatingSequence() != expectedCount)
         {
@@ -138,7 +142,7 @@ public final class OneToOneTranslatorThroughputTest extends AbstractPerfTestDisr
         }
     }
 
-    public static void main(String[] args) throws Exception
+    public static void main(final String[] args) throws Exception
     {
         OneToOneTranslatorThroughputTest test = new OneToOneTranslatorThroughputTest();
         test.testImplementations();

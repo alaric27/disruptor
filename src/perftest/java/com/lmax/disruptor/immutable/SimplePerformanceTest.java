@@ -1,11 +1,11 @@
 package com.lmax.disruptor.immutable;
 
-import java.util.concurrent.locks.LockSupport;
-
 import com.lmax.disruptor.BatchEventProcessor;
 import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.YieldingWaitStrategy;
+
+import java.util.concurrent.locks.LockSupport;
 
 public class SimplePerformanceTest
 {
@@ -33,10 +33,10 @@ public class SimplePerformanceTest
     private void doRun() throws InterruptedException
     {
         BatchEventProcessor<EventHolder> batchEventProcessor =
-            new BatchEventProcessor<EventHolder>(
-                ringBuffer,
-                ringBuffer.newBarrier(),
-                eventHolderHandler);
+                new BatchEventProcessor<>(
+                        ringBuffer,
+                        ringBuffer.newBarrier(),
+                        eventHolderHandler);
         ringBuffer.addGatingSequences(batchEventProcessor.getSequence());
 
         Thread t = new Thread(batchEventProcessor);
@@ -59,16 +59,9 @@ public class SimplePerformanceTest
     }
 
     private static final EventTranslatorOneArg<EventHolder, SimpleEvent> TRANSLATOR =
-        new EventTranslatorOneArg<EventHolder, SimpleEvent>()
-        {
-            @Override
-            public void translateTo(EventHolder holder, long arg1, SimpleEvent event)
-            {
-                holder.event = event;
-            }
-        };
+            (holder, arg1, event) -> holder.event = event;
 
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         new SimplePerformanceTest().run();
     }

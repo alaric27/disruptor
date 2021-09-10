@@ -15,7 +15,7 @@ public class PerfTestContext
         return disruptorOps;
     }
 
-    public void setDisruptorOps(long disruptorOps)
+    public void setDisruptorOps(final long disruptorOps)
     {
         this.disruptorOps = disruptorOps;
     }
@@ -27,17 +27,23 @@ public class PerfTestContext
 
     public double getBatchPercent()
     {
-        if (batchesProcessedCount == 0) return 0;
-        return 1 - (double)batchesProcessedCount / iterations;
+        if (batchesProcessedCount == 0)
+        {
+            return 0;
+        }
+        return 1 - (double) batchesProcessedCount / iterations;
     }
 
     public double getAverageBatchSize()
     {
-        if (batchesProcessedCount == 0) return -1;
-        return (double)iterations / batchesProcessedCount;
+        if (batchesProcessedCount == 0)
+        {
+            return -1;
+        }
+        return (double) iterations / batchesProcessedCount;
     }
 
-    public void setBatchData(long batchesProcessedCount, long iterations)
+    public void setBatchData(final long batchesProcessedCount, final long iterations)
     {
         this.batchesProcessedCount = batchesProcessedCount;
         this.iterations = iterations;

@@ -24,20 +24,23 @@ import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 
 /**
- * Set of common functions used by the Disruptor
+ * Set of common functions used by the Disruptor.
  */
 public final class Util
 {
+    private static final int ONE_MILLISECOND_IN_NANOSECONDS = 1_000_000;
+
     /**
-     * Calculate the next power of 2, greater than or equal to x.<p>
-     * From Hacker's Delight, Chapter 3, Harry S. Warren Jr.
+     * Calculate the next power of 2, greater than or equal to x.
+     *
+     * <p>From Hacker's Delight, Chapter 3, Harry S. Warren Jr.
      *
      * @param x Value to round up
      * @return The next power of 2 from x inclusive
      */
     public static int ceilingNextPowerOfTwo(final int x)
     {
-        return 1 << (32 - Integer.numberOfLeadingZeros(x - 1));
+        return 1 << (Integer.SIZE - Integer.numberOfLeadingZeros(x - 1));
     }
 
     /**
@@ -60,19 +63,20 @@ public final class Util
      * @return the smaller of minimum sequence value found in {@code sequences} and {@code minimum};
      * {@code minimum} if {@code sequences} is empty
      */
-    public static long getMinimumSequence(final Sequence[] sequences, long minimum)
+    public static long getMinimumSequence(final Sequence[] sequences, final long minimum)
     {
+        long minimumSequence = minimum;
         for (int i = 0, n = sequences.length; i < n; i++)
         {
             long value = sequences[i].get();
-            minimum = Math.min(minimum, value);
+            minimumSequence = Math.min(minimumSequence, value);
         }
 
-        return minimum;
+        return minimumSequence;
     }
 
     /**
-     * Get an array of {@link Sequence}s for the passed {@link EventProcessor}s
+     * Get an array of {@link Sequence}s for the passed {@link EventProcessor}s.
      *
      * @param processors for which to get the sequences
      * @return the array of {@link Sequence}s
@@ -94,14 +98,11 @@ public final class Util
     {
         try
         {
-            final PrivilegedExceptionAction<Unsafe> action = new PrivilegedExceptionAction<Unsafe>()
+            final PrivilegedExceptionAction<Unsafe> action = () ->
             {
-                public Unsafe run() throws Exception
-                {
-                    Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
-                    theUnsafe.setAccessible(true);
-                    return (Unsafe) theUnsafe.get(null);
-                }
+                Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+                theUnsafe.setAccessible(true);
+                return (Unsafe) theUnsafe.get(null);
             };
 
             THE_UNSAFE = AccessController.doPrivileged(action);
@@ -130,20 +131,27 @@ public final class Util
      * @param i Value to calculate log2 for.
      * @return The log2 value
      */
-    public static int log2(int i)
+    public static int log2(final int i)
     {
+        long value = i;
         int r = 0;
-        while ((i >>= 1) != 0)
+        while ((value >>= 1) != 0)
         {
             ++r;
         }
         return r;
     }
 
-    public static long awaitNanos(Object mutex, long timeoutNanos) throws InterruptedException
+    /**
+     * @param mutex The object to wait on
+     * @param timeoutNanos The number of nanoseconds to wait for
+     * @return the number of nanoseconds waited (approximately)
+     * @throws InterruptedException if the underlying call to wait is interrupted
+     */
+    public static long awaitNanos(final Object mutex, final long timeoutNanos) throws InterruptedException
     {
-        long millis = timeoutNanos / 1_000_000;
-        long nanos = timeoutNanos % 1_000_000;
+        long millis = timeoutNanos / ONE_MILLISECOND_IN_NANOSECONDS;
+        long nanos = timeoutNanos % ONE_MILLISECOND_IN_NANOSECONDS;
 
         long t0 = System.nanoTime();
         mutex.wait(millis, (int) nanos);

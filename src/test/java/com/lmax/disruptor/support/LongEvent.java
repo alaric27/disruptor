@@ -21,7 +21,7 @@ public class LongEvent
 {
     private long value;
 
-    public void set(long value)
+    public void set(final long value)
     {
         this.value = value;
     }
@@ -31,12 +31,5 @@ public class LongEvent
         return value;
     }
 
-    public static final EventFactory<LongEvent> FACTORY = new EventFactory<LongEvent>()
-    {
-        @Override
-        public LongEvent newInstance()
-        {
-            return new LongEvent();
-        }
-    };
+    public static final EventFactory<LongEvent> FACTORY = () -> new LongEvent();
 }

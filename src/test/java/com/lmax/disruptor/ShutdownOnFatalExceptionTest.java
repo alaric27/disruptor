@@ -3,11 +3,13 @@ package com.lmax.disruptor;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class ShutdownOnFatalExceptionTest
 {
@@ -19,17 +21,18 @@ public class ShutdownOnFatalExceptionTest
     private Disruptor<byte[]> disruptor;
 
     @SuppressWarnings("unchecked")
-    @Before
+    @BeforeEach
     public void setUp()
     {
-        disruptor = new Disruptor<byte[]>(
-            new ByteArrayFactory(256), 1024, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE,
-            new BlockingWaitStrategy());
+        disruptor = new Disruptor<>(
+                new ByteArrayFactory(256), 1024, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE,
+                new BlockingWaitStrategy());
         disruptor.handleEventsWith(eventHandler);
         disruptor.setDefaultExceptionHandler(new FatalExceptionHandler());
     }
 
-    @Test(timeout = 1000)
+    @Test
+    @Timeout(value = 1000, unit = TimeUnit.MILLISECONDS)
     public void shouldShutdownGracefulEvenWithFatalExceptionHandler()
     {
         disruptor.start();
@@ -43,7 +46,7 @@ public class ShutdownOnFatalExceptionTest
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown()
     {
         disruptor.shutdown();
@@ -54,13 +57,13 @@ public class ShutdownOnFatalExceptionTest
 
         private final byte[] bytes;
 
-        ByteArrayTranslator(byte[] bytes)
+        ByteArrayTranslator(final byte[] bytes)
         {
             this.bytes = bytes;
         }
 
         @Override
-        public void translateTo(byte[] event, long sequence)
+        public void translateTo(final byte[] event, final long sequence)
         {
             System.arraycopy(bytes, 0, event, 0, bytes.length);
         }
@@ -71,7 +74,7 @@ public class ShutdownOnFatalExceptionTest
         private int count = 0;
 
         @Override
-        public void onEvent(byte[] event, long sequence, boolean endOfBatch) throws Exception
+        public void onEvent(final byte[] event, final long sequence, final boolean endOfBatch) throws Exception
         {
             // some logging
             count++;
@@ -86,7 +89,7 @@ public class ShutdownOnFatalExceptionTest
     {
         private int eventSize;
 
-        ByteArrayFactory(int eventSize)
+        ByteArrayFactory(final int eventSize)
         {
             this.eventSize = eventSize;
         }

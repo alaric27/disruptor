@@ -1,41 +1,40 @@
-/*
- * Copyright 2012 LMAX Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.lmax.disruptor;
 
-import sun.misc.Unsafe;
 
-import com.lmax.disruptor.util.Util;
-
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 
 class LhsPadding
 {
-    protected long p1, p2, p3, p4, p5, p6, p7;
+    protected byte
+        p10, p11, p12, p13, p14, p15, p16, p17,
+        p20, p21, p22, p23, p24, p25, p26, p27,
+        p30, p31, p32, p33, p34, p35, p36, p37,
+        p40, p41, p42, p43, p44, p45, p46, p47,
+        p50, p51, p52, p53, p54, p55, p56, p57,
+        p60, p61, p62, p63, p64, p65, p66, p67,
+        p70, p71, p72, p73, p74, p75, p76, p77;
 }
 
 class Value extends LhsPadding
 {
-    protected volatile long value;
+    protected long value;
 }
 
 class RhsPadding extends Value
 {
-    protected long p9, p10, p11, p12, p13, p14, p15;
+    protected byte
+        p90, p91, p92, p93, p94, p95, p96, p97,
+        p100, p101, p102, p103, p104, p105, p106, p107,
+        p110, p111, p112, p113, p114, p115, p116, p117,
+        p120, p121, p122, p123, p124, p125, p126, p127,
+        p130, p131, p132, p133, p134, p135, p136, p137,
+        p140, p141, p142, p143, p144, p145, p146, p147,
+        p150, p151, p152, p153, p154, p155, p156, p157;
 }
 
 /**
+ * Concurrent sequence class used for tracking the progress of
  * 其功能类似AtomicLong,但是比AtomicLong优点为消除了伪共享
  *
  * <p>Concurrent sequence class used for tracking the progress of
@@ -48,15 +47,14 @@ class RhsPadding extends Value
 public class Sequence extends RhsPadding
 {
     static final long INITIAL_VALUE = -1L;
-    private static final Unsafe UNSAFE;
-    private static final long VALUE_OFFSET;
+    private static final VarHandle VALUE_FIELD;
 
     static
     {
-        UNSAFE = Util.getUnsafe();
         try
         {
-            VALUE_OFFSET = UNSAFE.objectFieldOffset(Value.class.getDeclaredField("value"));
+            VALUE_FIELD = MethodHandles.lookup().in(Sequence.class)
+                    .findVarHandle(Sequence.class, "value", long.class);
         }
         catch (final Exception e)
         {
@@ -79,7 +77,8 @@ public class Sequence extends RhsPadding
      */
     public Sequence(final long initialValue)
     {
-        UNSAFE.putOrderedLong(this, VALUE_OFFSET, initialValue);
+        VarHandle.releaseFence();
+        this.value = initialValue;
     }
 
     /**
@@ -89,6 +88,8 @@ public class Sequence extends RhsPadding
      */
     public long get()
     {
+        long value = this.value;
+        VarHandle.acquireFence();
         return value;
     }
 
@@ -101,7 +102,8 @@ public class Sequence extends RhsPadding
      */
     public void set(final long value)
     {
-        UNSAFE.putOrderedLong(this, VALUE_OFFSET, value);
+        VarHandle.releaseFence();
+        this.value = value;
     }
 
     /**
@@ -114,19 +116,21 @@ public class Sequence extends RhsPadding
      */
     public void setVolatile(final long value)
     {
-        UNSAFE.putLongVolatile(this, VALUE_OFFSET, value);
+        VarHandle.releaseFence();
+        this.value = value;
+        VarHandle.fullFence();
     }
 
     /**
      * Perform a compare and set operation on the sequence.
      *
      * @param expectedValue The expected current value.
-     * @param newValue The value to update to.
+     * @param newValue      The value to update to.
      * @return true if the operation succeeds, false otherwise.
      */
     public boolean compareAndSet(final long expectedValue, final long newValue)
     {
-        return UNSAFE.compareAndSwapLong(this, VALUE_OFFSET, expectedValue, newValue);
+        return VALUE_FIELD.compareAndSet(this, expectedValue, newValue);
     }
 
     /**
@@ -136,7 +140,7 @@ public class Sequence extends RhsPadding
      */
     public long incrementAndGet()
     {
-        return addAndGet(1L);
+        return addAndGet(1);
     }
 
     /**
@@ -147,17 +151,18 @@ public class Sequence extends RhsPadding
      */
     public long addAndGet(final long increment)
     {
-        long currentValue;
-        long newValue;
+        return (long) VALUE_FIELD.getAndAdd(this, increment) + increment;
+    }
 
-        do
-        {
-            currentValue = get();
-            newValue = currentValue + increment;
-        }
-        while (!compareAndSet(currentValue, newValue));
-
-        return newValue;
+    /**
+     * Perform an atomic getAndAdd operation on the sequence.
+     *
+     * @param increment The value to add to the sequence.
+     * @return the value before increment
+     */
+    public long getAndAdd(final long increment)
+    {
+        return (long) VALUE_FIELD.getAndAdd(this, increment);
     }
 
     @Override

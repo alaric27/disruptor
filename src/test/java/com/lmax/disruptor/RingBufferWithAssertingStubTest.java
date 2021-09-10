@@ -1,25 +1,25 @@
 package com.lmax.disruptor;
 
 import com.lmax.disruptor.support.StubEvent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class RingBufferWithAssertingStubTest
 {
     private RingBuffer<StubEvent> ringBuffer;
     private Sequencer sequencer;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         sequencer = new AssertingSequencer(16);
 
-        ringBuffer = new RingBuffer<StubEvent>(StubEvent.EVENT_FACTORY, sequencer);
+        ringBuffer = new RingBuffer<>(StubEvent.EVENT_FACTORY, sequencer);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class RingBufferWithAssertingStubTest
         private long lastBatchSize = -1;
         private long lastValue = -1;
 
-        private AssertingSequencer(int size)
+        private AssertingSequencer(final int size)
         {
             this.size = size;
         }
@@ -66,7 +66,7 @@ public class RingBufferWithAssertingStubTest
         }
 
         @Override
-        public boolean hasAvailableCapacity(int requiredCapacity)
+        public boolean hasAvailableCapacity(final int requiredCapacity)
         {
             return requiredCapacity <= size;
         }
@@ -86,7 +86,7 @@ public class RingBufferWithAssertingStubTest
         }
 
         @Override
-        public long next(int n)
+        public long next(final int n)
         {
             lastValue = ThreadLocalRandom.current().nextLong(n, 1000000);
             lastBatchSize = n;
@@ -100,20 +100,20 @@ public class RingBufferWithAssertingStubTest
         }
 
         @Override
-        public long tryNext(int n) throws InsufficientCapacityException
+        public long tryNext(final int n) throws InsufficientCapacityException
         {
             return next(n);
         }
 
         @Override
-        public void publish(long sequence)
+        public void publish(final long sequence)
         {
             assertThat(sequence, is(lastValue));
             assertThat(lastBatchSize, is(1L));
         }
 
         @Override
-        public void publish(long lo, long hi)
+        public void publish(final long lo, final long hi)
         {
             assertThat(hi, is(lastValue));
             assertThat((hi - lo) + 1, is(lastBatchSize));
@@ -126,31 +126,31 @@ public class RingBufferWithAssertingStubTest
         }
 
         @Override
-        public void claim(long sequence)
+        public void claim(final long sequence)
         {
 
         }
 
         @Override
-        public boolean isAvailable(long sequence)
-        {
-            return false;
-        }
-
-        @Override
-        public void addGatingSequences(Sequence... gatingSequences)
-        {
-
-        }
-
-        @Override
-        public boolean removeGatingSequence(Sequence sequence)
+        public boolean isAvailable(final long sequence)
         {
             return false;
         }
 
         @Override
-        public SequenceBarrier newBarrier(Sequence... sequencesToTrack)
+        public void addGatingSequences(final Sequence... gatingSequences)
+        {
+
+        }
+
+        @Override
+        public boolean removeGatingSequence(final Sequence sequence)
+        {
+            return false;
+        }
+
+        @Override
+        public SequenceBarrier newBarrier(final Sequence... sequencesToTrack)
         {
             return null;
         }
@@ -162,13 +162,13 @@ public class RingBufferWithAssertingStubTest
         }
 
         @Override
-        public long getHighestPublishedSequence(long nextSequence, long availableSequence)
+        public long getHighestPublishedSequence(final long nextSequence, final long availableSequence)
         {
             return 0;
         }
 
         @Override
-        public <T> EventPoller<T> newPoller(DataProvider<T> provider, Sequence... gatingSequences)
+        public <T> EventPoller<T> newPoller(final DataProvider<T> provider, final Sequence... gatingSequences)
         {
             return null;
         }

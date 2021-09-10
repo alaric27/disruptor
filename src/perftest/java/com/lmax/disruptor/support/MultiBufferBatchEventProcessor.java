@@ -1,6 +1,12 @@
 package com.lmax.disruptor.support;
 
-import com.lmax.disruptor.*;
+import com.lmax.disruptor.AlertException;
+import com.lmax.disruptor.DataProvider;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.EventProcessor;
+import com.lmax.disruptor.Sequence;
+import com.lmax.disruptor.SequenceBarrier;
+import com.lmax.disruptor.TimeoutException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,9 +21,9 @@ public class MultiBufferBatchEventProcessor<T>
     private long count;
 
     public MultiBufferBatchEventProcessor(
-        DataProvider<T>[] providers,
-        SequenceBarrier[] barriers,
-        EventHandler<T> handler)
+        final DataProvider<T>[] providers,
+        final SequenceBarrier[] barriers,
+        final EventHandler<T> handler)
     {
         if (providers.length != barriers.length)
         {

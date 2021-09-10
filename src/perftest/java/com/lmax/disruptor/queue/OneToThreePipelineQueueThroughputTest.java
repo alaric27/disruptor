@@ -15,7 +15,10 @@
  */
 package com.lmax.disruptor.queue;
 
-import static com.lmax.disruptor.support.PerfTestUtil.failIf;
+import com.lmax.disruptor.AbstractPerfTestQueue;
+import com.lmax.disruptor.support.FunctionQueueProcessor;
+import com.lmax.disruptor.support.FunctionStep;
+import com.lmax.disruptor.util.DaemonThreadFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -24,10 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.lmax.disruptor.AbstractPerfTestQueue;
-import com.lmax.disruptor.support.FunctionQueueProcessor;
-import com.lmax.disruptor.support.FunctionStep;
-import com.lmax.disruptor.util.DaemonThreadFactory;
+import static com.lmax.disruptor.support.PerfTestUtil.failIf;
 
 /**
  * <pre>
@@ -88,9 +88,9 @@ public final class OneToThreePipelineQueueThroughputTest extends AbstractPerfTes
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    private final BlockingQueue<long[]> stepOneQueue = new LinkedBlockingQueue<long[]>(BUFFER_SIZE);
-    private final BlockingQueue<Long> stepTwoQueue = new LinkedBlockingQueue<Long>(BUFFER_SIZE);
-    private final BlockingQueue<Long> stepThreeQueue = new LinkedBlockingQueue<Long>(BUFFER_SIZE);
+    private final BlockingQueue<long[]> stepOneQueue = new LinkedBlockingQueue<>(BUFFER_SIZE);
+    private final BlockingQueue<Long> stepTwoQueue = new LinkedBlockingQueue<>(BUFFER_SIZE);
+    private final BlockingQueue<Long> stepThreeQueue = new LinkedBlockingQueue<>(BUFFER_SIZE);
 
     private final FunctionQueueProcessor stepOneQueueProcessor =
         new FunctionQueueProcessor(FunctionStep.ONE, stepOneQueue, stepTwoQueue, stepThreeQueue, ITERATIONS - 1);
@@ -146,7 +146,7 @@ public final class OneToThreePipelineQueueThroughputTest extends AbstractPerfTes
         return opsPerSecond;
     }
 
-    public static void main(String[] args) throws Exception
+    public static void main(final String[] args) throws Exception
     {
         new OneToThreePipelineQueueThroughputTest().testImplementations();
     }
