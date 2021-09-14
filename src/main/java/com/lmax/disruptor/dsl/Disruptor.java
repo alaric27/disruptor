@@ -201,7 +201,6 @@ public class Disruptor<T>
         }
 
         ringBuffer.addGatingSequences(sequences);
-
         return new EventHandlerGroup<>(this, consumerRepository, Util.getSequencesFor(processors));
     }
 
