@@ -89,7 +89,10 @@ abstract class RingBufferFields<E> extends RingBufferPad
      */
     protected final Sequencer sequencer;
 
-    RingBufferFields(finalEventFactory<E> eventFactory,final Sequencer sequencer) {
+    RingBufferFields(
+        final EventFactory<E> eventFactory,
+        final Sequencer sequencer)
+    {
         this.sequencer = sequencer;
         this.bufferSize = sequencer.getBufferSize();
 
@@ -159,7 +162,10 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
      * @param sequencer    sequencer to handle the ordering of events moving through the RingBuffer.
      * @throws IllegalArgumentException if bufferSize is less than 1 or not a power of 2
      */
-    RingBuffer(finalEventFactory<E> eventFactory,final Sequencer sequencer) {
+    RingBuffer(
+        final EventFactory<E> eventFactory,
+        final Sequencer sequencer)
+    {
         super(eventFactory, sequencer);
     }
 
@@ -175,7 +181,11 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
      * @throws IllegalArgumentException if bufferSize is less than 1 or not a power of 2
      * @see MultiProducerSequencer
      */
-    public static <E> RingBuffer<E> createMultiProducer(finalEventFactory<E> factory,final int bufferSize,final WaitStrategy waitStrategy) {
+    public static <E> RingBuffer<E> createMultiProducer(
+        final EventFactory<E> factory,
+        final int bufferSize,
+        final WaitStrategy waitStrategy)
+    {
         MultiProducerSequencer sequencer = new MultiProducerSequencer(bufferSize, waitStrategy);
         return new RingBuffer<>(factory, sequencer);
     }
@@ -207,7 +217,11 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
      * @throws IllegalArgumentException if bufferSize is less than 1 or not a power of 2
      * @see SingleProducerSequencer
      */
-    public static <E> RingBuffer<E> createSingleProducer(finalEventFactory<E> factory,final int bufferSize,final WaitStrategy waitStrategy) {
+    public static <E> RingBuffer<E> createSingleProducer(
+        final EventFactory<E> factory,
+        final int bufferSize,
+        final WaitStrategy waitStrategy)
+    {
         SingleProducerSequencer sequencer = new SingleProducerSequencer(bufferSize, waitStrategy);
         return new RingBuffer<>(factory, sequencer);
     }
@@ -222,7 +236,8 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
      * @throws IllegalArgumentException if <code>bufferSize</code> is less than 1 or not a power of 2
      * @see MultiProducerSequencer
      */
-    public static <E> RingBuffer<E> createSingleProducer(final EventFactory<E> factory, final int bufferSize) {
+    public static <E> RingBuffer<E> createSingleProducer(final EventFactory<E> factory, final int bufferSize)
+    {
         return createSingleProducer(factory, bufferSize, new BlockingWaitStrategy());
     }
 
@@ -237,7 +252,12 @@ public final class RingBuffer<E> extends RingBufferFields<E> implements Cursored
      * @return a constructed ring buffer.
      * @throws IllegalArgumentException if bufferSize is less than 1 or not a power of 2
      */
-    public static <E> RingBuffer<E> create(finalProducerType producerType,final EventFactory<E> factory,final int bufferSize,final WaitStrategy waitStrategy) {
+    public static <E> RingBuffer<E> create(
+        final ProducerType producerType,
+        final EventFactory<E> factory,
+        final int bufferSize,
+        final WaitStrategy waitStrategy)
+    {
         switch (producerType)
         {
             case SINGLE:
