@@ -37,10 +37,19 @@ public final class MultiProducerSequencer extends AbstractSequencer
 
     private final Sequence gatingSequenceCache = new Sequence(Sequencer.INITIAL_CURSOR_VALUE);
 
-    // availableBuffer tracks the state of each ringbuffer slot
-    // see below for more details on the approach
+    /**
+     * 跟踪每个RingBuffer的槽状态
+     */
     private final int[] availableBuffer;
+
+    /**
+     * 用于计算sequence对应的数组索引
+     */
     private final int indexMask;
+
+    /**
+     * bufferSize取2的对数, 以位移的方式计算sequence整除bufferSize的值
+     */
     private final int indexShift;
 
     /**
@@ -119,9 +128,13 @@ public final class MultiProducerSequencer extends AbstractSequencer
         long current = cursor.getAndAdd(n);
 
         long nextSequence = current + n;
+        // wrapPoint等于生产者的序号减去环形数组的大小，
+        // 用于判断生产者的序号在环形数组中是否绕过了消费者最小的序号
         long wrapPoint = nextSequence - bufferSize;
         long cachedGatingSequence = gatingSequenceCache.get();
 
+        // 判断wrapPoint是否大于上一次计算时消费者的最小值
+        // 如果大于则进行一次从新计算判断，否则直接后续赋值操作
         if (wrapPoint > cachedGatingSequence || cachedGatingSequence > current)
         {
             long gatingSequence;

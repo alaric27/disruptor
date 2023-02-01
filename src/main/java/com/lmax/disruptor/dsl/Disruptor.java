@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * </pre>
  *
  * @param <T> the type of event used.
+ * 辅助类，引导disruptor启动
  */
 public class Disruptor<T>
 {
@@ -83,6 +84,9 @@ public class Disruptor<T>
      * @param threadFactory  a {@link ThreadFactory} to create threads for processors.
      * @param producerType   the claim strategy to use for the ring buffer.
      * @param waitStrategy   the wait strategy to use for the ring buffer.
+     *
+     * disruptor为什么不用ThreadPoolExecutor,而是自定义了一个简单的BasicExecutor执行器
+     * disruptor中的执行器只是为了启动EventProcessor线程的。该线程一般启动后会一直运行，也不需要关闭线程，所以不需要复杂的线程池
      */
     public Disruptor(
             final EventFactory<T> eventFactory,
@@ -106,6 +110,7 @@ public class Disruptor<T>
     }
 
     /**
+     * 添加Event处理器
      * <p>Set up event handlers to handle events from the ring buffer. These handlers will process events
      * as soon as they become available, in parallel.</p>
      *
@@ -336,9 +341,11 @@ public class Disruptor<T>
      */
     public RingBuffer<T> start()
     {
+        // 确保只启动一次
         checkOnlyStartedOnce();
         for (final ConsumerInfo consumerInfo : consumerRepository)
         {
+            // 启动各个消费者
             consumerInfo.start(threadFactory);
         }
 
@@ -494,6 +501,7 @@ public class Disruptor<T>
     {
         checkNotStarted();
 
+        // 创建一个eventHandlers长度大小的Sequence数组
         final Sequence[] processorSequences = new Sequence[eventHandlers.length];
         final SequenceBarrier barrier = ringBuffer.newBarrier(barrierSequences);
 
