@@ -16,26 +16,23 @@
 package com.lmax.disruptor.dsl;
 
 import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.EventHandlerIdentity;
 import com.lmax.disruptor.EventProcessor;
 import com.lmax.disruptor.Sequence;
 import com.lmax.disruptor.SequenceBarrier;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Provides a repository mechanism to associate {@link EventHandler}s with {@link EventProcessor}s
- *
- * @param <T> the type of the {@link EventHandler}
  */
-class ConsumerRepository<T> implements Iterable<ConsumerInfo>
+class ConsumerRepository
 {
-    private final Map<EventHandler<?>, EventProcessorInfo<T>> eventProcessorInfoByEventHandler =
+    private final Map<EventHandlerIdentity, EventProcessorInfo> eventProcessorInfoByEventHandler =
         new IdentityHashMap<>();
     private final Map<Sequence, ConsumerInfo> eventProcessorInfoBySequence =
         new IdentityHashMap<>();
@@ -43,20 +40,30 @@ class ConsumerRepository<T> implements Iterable<ConsumerInfo>
 
     public void add(
         final EventProcessor eventprocessor,
-        final EventHandler<? super T> handler,
+        final EventHandlerIdentity handlerIdentity,
         final SequenceBarrier barrier)
     {
-        final EventProcessorInfo<T> consumerInfo = new EventProcessorInfo<>(eventprocessor, handler, barrier);
-        eventProcessorInfoByEventHandler.put(handler, consumerInfo);
+        final EventProcessorInfo consumerInfo = new EventProcessorInfo(eventprocessor, barrier);
+        eventProcessorInfoByEventHandler.put(handlerIdentity, consumerInfo);
         eventProcessorInfoBySequence.put(eventprocessor.getSequence(), consumerInfo);
         consumerInfos.add(consumerInfo);
     }
 
     public void add(final EventProcessor processor)
     {
-        final EventProcessorInfo<T> consumerInfo = new EventProcessorInfo<>(processor, null, null);
+        final EventProcessorInfo consumerInfo = new EventProcessorInfo(processor, null);
         eventProcessorInfoBySequence.put(processor.getSequence(), consumerInfo);
         consumerInfos.add(consumerInfo);
+    }
+
+    public void startAll(final ThreadFactory threadFactory)
+    {
+        consumerInfos.forEach(c -> c.start(threadFactory));
+    }
+
+    public void haltAll()
+    {
+        consumerInfos.forEach(ConsumerInfo::halt);
     }
 
     public boolean hasBacklog(final long cursor, final boolean includeStopped)
@@ -79,40 +86,20 @@ class ConsumerRepository<T> implements Iterable<ConsumerInfo>
         return false;
     }
 
-    /**
-     * @deprecated this function should no longer be used to determine the existence
-     * of a backlog, instead use hasBacklog
-     */
-    @Deprecated
-    public Sequence[] getLastSequenceInChain(final boolean includeStopped)
+    public EventProcessor getEventProcessorFor(final EventHandlerIdentity handlerIdentity)
     {
-        List<Sequence> lastSequence = new ArrayList<>();
-        for (ConsumerInfo consumerInfo : consumerInfos)
-        {
-            if ((includeStopped || consumerInfo.isRunning()) && consumerInfo.isEndOfChain())
-            {
-                final Sequence[] sequences = consumerInfo.getSequences();
-                Collections.addAll(lastSequence, sequences);
-            }
-        }
-
-        return lastSequence.toArray(new Sequence[lastSequence.size()]);
-    }
-
-    public EventProcessor getEventProcessorFor(final EventHandler<T> handler)
-    {
-        final EventProcessorInfo<T> eventprocessorInfo = getEventProcessorInfo(handler);
+        final EventProcessorInfo eventprocessorInfo = getEventProcessorInfo(handlerIdentity);
         if (eventprocessorInfo == null)
         {
-            throw new IllegalArgumentException("The event handler " + handler + " is not processing events.");
+            throw new IllegalArgumentException("The event handler " + handlerIdentity + " is not processing events.");
         }
 
         return eventprocessorInfo.getEventProcessor();
     }
 
-    public Sequence getSequenceFor(final EventHandler<T> handler)
+    public Sequence getSequenceFor(final EventHandlerIdentity handlerIdentity)
     {
-        return getEventProcessorFor(handler).getSequence();
+        return getEventProcessorFor(handlerIdentity).getSequence();
     }
 
     public void unMarkEventProcessorsAsEndOfChain(final Sequence... barrierEventProcessors)
@@ -123,21 +110,15 @@ class ConsumerRepository<T> implements Iterable<ConsumerInfo>
         }
     }
 
-    @Override
-    public Iterator<ConsumerInfo> iterator()
+    public SequenceBarrier getBarrierFor(final EventHandlerIdentity handlerIdentity)
     {
-        return consumerInfos.iterator();
-    }
-
-    public SequenceBarrier getBarrierFor(final EventHandler<T> handler)
-    {
-        final ConsumerInfo consumerInfo = getEventProcessorInfo(handler);
+        final ConsumerInfo consumerInfo = getEventProcessorInfo(handlerIdentity);
         return consumerInfo != null ? consumerInfo.getBarrier() : null;
     }
 
-    private EventProcessorInfo<T> getEventProcessorInfo(final EventHandler<T> handler)
+    private EventProcessorInfo getEventProcessorInfo(final EventHandlerIdentity handlerIdentity)
     {
-        return eventProcessorInfoByEventHandler.get(handler);
+        return eventProcessorInfoByEventHandler.get(handlerIdentity);
     }
 
     private ConsumerInfo getEventProcessorInfo(final Sequence barrierEventProcessor)

@@ -16,7 +16,7 @@
 package com.lmax.disruptor.dsl;
 
 import com.lmax.disruptor.BatchEventProcessor;
-import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.EventHandlerIdentity;
 import com.lmax.disruptor.EventProcessor;
 import com.lmax.disruptor.ExceptionHandler;
 
@@ -29,14 +29,14 @@ import com.lmax.disruptor.ExceptionHandler;
  */
 public class ExceptionHandlerSetting<T>
 {
-    private final EventHandler<T> eventHandler;
-    private final ConsumerRepository<T> consumerRepository;
+    private final EventHandlerIdentity handlerIdentity;
+    private final ConsumerRepository consumerRepository;
 
     ExceptionHandlerSetting(
-        final EventHandler<T> eventHandler,
-        final ConsumerRepository<T> consumerRepository)
+        final EventHandlerIdentity handlerIdentity,
+        final ConsumerRepository consumerRepository)
     {
-        this.eventHandler = eventHandler;
+        this.handlerIdentity = handlerIdentity;
         this.consumerRepository = consumerRepository;
     }
 
@@ -48,11 +48,11 @@ public class ExceptionHandlerSetting<T>
     @SuppressWarnings("unchecked")
     public void with(final ExceptionHandler<? super T> exceptionHandler)
     {
-        final EventProcessor eventProcessor = consumerRepository.getEventProcessorFor(eventHandler);
+        final EventProcessor eventProcessor = consumerRepository.getEventProcessorFor(handlerIdentity);
         if (eventProcessor instanceof BatchEventProcessor)
         {
             ((BatchEventProcessor<T>) eventProcessor).setExceptionHandler(exceptionHandler);
-            consumerRepository.getBarrierFor(eventHandler).alert();
+            consumerRepository.getBarrierFor(handlerIdentity).alert();
         }
         else
         {
