@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 /**
+ * 在AbstractSequencer中主要维护了标识生产者进度的cursor(Sequence对象) 和 消费者进度的gatingSequences(Sequence[] 对象)
  * Base class for the various sequencer types (single/multi).  Provides
  * common functionality like the management of gating sequences (add/remove) and
  * ownership of the current cursor.

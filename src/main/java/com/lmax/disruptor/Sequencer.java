@@ -16,6 +16,8 @@
 package com.lmax.disruptor;
 
 /**
+ * 生产者与RingBuffer之间的桥梁
+ * 序号生成器, 生产者发布, 消费者查询
  * Coordinates claiming sequences for access to a data structure while tracking dependent {@link Sequence}s
  */
 public interface Sequencer extends Cursored, Sequenced
@@ -34,6 +36,7 @@ public interface Sequencer extends Cursored, Sequenced
     void claim(long sequence);
 
     /**
+     * 是否可消费
      * Confirms if a sequence is published and the event is available for use; non-blocking.
      *
      * @param sequence of the buffer to check
