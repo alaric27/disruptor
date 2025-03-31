@@ -6,15 +6,16 @@
 <title>Class Hierarchy (Disruptor)</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" type="text/css" href="stylesheet.css" title="Style">
-<link rel="stylesheet" type="text/css" href="jquery/jquery-ui.css" title="Style">
+<link rel="stylesheet" type="text/css" href="jquery/jquery-ui.min.css" title="Style">
+<link rel="stylesheet" type="text/css" href="jquery-ui.overrides.css" title="Style">
 <script type="text/javascript" src="script.js"></script>
 <script type="text/javascript" src="jquery/jszip/dist/jszip.min.js"></script>
 <script type="text/javascript" src="jquery/jszip-utils/dist/jszip-utils.min.js"></script>
 <!--[if IE]>
 <script type="text/javascript" src="jquery/jszip-utils/dist/jszip-utils-ie.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="jquery/jquery-3.5.1.js"></script>
-<script type="text/javascript" src="jquery/jquery-ui.js"></script>
+<script type="text/javascript" src="jquery/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="jquery/jquery-ui.min.js"></script>
 </head>
 <body>
 <script type="text/javascript"><!--
@@ -102,7 +103,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </ul>
 </div>
 <div class="contentContainer">
-<section role="region">
+<section>
 <h2 title="Class Hierarchy">Class Hierarchy</h2>
 <ul>
 <li class="circle">java.lang.Object
@@ -113,8 +114,9 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/SingleProducerSequencer.html" title="class in com.lmax.disruptor"><span class="typeNameLink">SingleProducerSequencer</span></a></li>
 </ul>
 </li>
-<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/AggregateEventHandler.html" title="class in com.lmax.disruptor"><span class="typeNameLink">AggregateEventHandler</span></a>&lt;T&gt; (implements com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;T&gt;, com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/LifecycleAware.html" title="interface in com.lmax.disruptor">LifecycleAware</a>)</li>
+<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/AggregateEventHandler.html" title="class in com.lmax.disruptor"><span class="typeNameLink">AggregateEventHandler</span></a>&lt;T&gt; (implements com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;T&gt;)</li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/BatchEventProcessor.html" title="class in com.lmax.disruptor"><span class="typeNameLink">BatchEventProcessor</span></a>&lt;T&gt; (implements com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventProcessor.html" title="interface in com.lmax.disruptor">EventProcessor</a>)</li>
+<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/BatchEventProcessorBuilder.html" title="class in com.lmax.disruptor"><span class="typeNameLink">BatchEventProcessorBuilder</span></a></li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/BlockingWaitStrategy.html" title="class in com.lmax.disruptor"><span class="typeNameLink">BlockingWaitStrategy</span></a> (implements com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/WaitStrategy.html" title="interface in com.lmax.disruptor">WaitStrategy</a>)</li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/BusySpinWaitStrategy.html" title="class in com.lmax.disruptor"><span class="typeNameLink">BusySpinWaitStrategy</span></a> (implements com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/WaitStrategy.html" title="interface in com.lmax.disruptor">WaitStrategy</a>)</li>
 <li class="circle">com.lmax.disruptor.dsl.<a href="com.lmax.disruptor/com/lmax/disruptor/dsl/Disruptor.html" title="class in com.lmax.disruptor.dsl"><span class="typeNameLink">Disruptor</span></a>&lt;T&gt;</li>
@@ -147,14 +149,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <ul>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/AlertException.html" title="class in com.lmax.disruptor"><span class="typeNameLink">AlertException</span></a></li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/InsufficientCapacityException.html" title="class in com.lmax.disruptor"><span class="typeNameLink">InsufficientCapacityException</span></a></li>
-<li class="circle">java.lang.RuntimeException
-<ul>
-<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/RewindableException.html" title="class in com.lmax.disruptor"><span class="typeNameLink">RewindableException</span></a></li>
-</ul>
-</li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/TimeoutException.html" title="class in com.lmax.disruptor"><span class="typeNameLink">TimeoutException</span></a></li>
 </ul>
 </li>
+<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/RewindableException.html" title="class in com.lmax.disruptor"><span class="typeNameLink">RewindableException</span></a></li>
 </ul>
 </li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/TimeoutBlockingWaitStrategy.html" title="class in com.lmax.disruptor"><span class="typeNameLink">TimeoutBlockingWaitStrategy</span></a> (implements com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/WaitStrategy.html" title="interface in com.lmax.disruptor">WaitStrategy</a>)</li>
@@ -164,11 +162,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </li>
 </ul>
 </section>
-<section role="region">
+<section>
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/BatchRewindStrategy.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">BatchRewindStrategy</span></a></li>
-<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/BatchStartAware.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">BatchStartAware</span></a></li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/Cursored.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">Cursored</span></a>
 <ul>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/Sequencer.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">Sequencer</span></a> (also extends com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/Sequenced.html" title="interface in com.lmax.disruptor">Sequenced</a>)</li>
@@ -180,9 +177,14 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </ul>
 </li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventFactory.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">EventFactory</span></a>&lt;T&gt;</li>
-<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventHandler.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">EventHandler</span></a>&lt;T&gt;
+<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventHandlerIdentity.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">EventHandlerIdentity</span></a>
 <ul>
-<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/SequenceReportingEventHandler.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">SequenceReportingEventHandler</span></a>&lt;T&gt;</li>
+<li class="circle">com.lmax.disruptor.EventHandlerBase&lt;T&gt;
+<ul>
+<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventHandler.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">EventHandler</span></a>&lt;T&gt;</li>
+<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/RewindableEventHandler.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">RewindableEventHandler</span></a>&lt;T&gt;</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventPoller.Handler.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">EventPoller.Handler</span></a>&lt;T&gt;</li>
@@ -194,7 +196,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventTranslatorTwoArg.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">EventTranslatorTwoArg</span></a>&lt;T,&#8203;A,&#8203;B&gt;</li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventTranslatorVararg.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">EventTranslatorVararg</span></a>&lt;T&gt;</li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/ExceptionHandler.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">ExceptionHandler</span></a>&lt;T&gt;</li>
-<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/LifecycleAware.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">LifecycleAware</span></a></li>
+<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/RewindHandler.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">RewindHandler</span></a></li>
 <li class="circle">java.lang.Runnable
 <ul>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/EventProcessor.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">EventProcessor</span></a></li>
@@ -207,11 +209,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/Sequencer.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">Sequencer</span></a> (also extends com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/Cursored.html" title="interface in com.lmax.disruptor">Cursored</a>)</li>
 </ul>
 </li>
-<li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/TimeoutHandler.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">TimeoutHandler</span></a></li>
 <li class="circle">com.lmax.disruptor.<a href="com.lmax.disruptor/com/lmax/disruptor/WaitStrategy.html" title="interface in com.lmax.disruptor"><span class="typeNameLink">WaitStrategy</span></a></li>
 </ul>
 </section>
-<section role="region">
+<section>
 <h2 title="Enum Hierarchy">Enum Hierarchy</h2>
 <ul>
 <li class="circle">java.lang.Object
@@ -275,7 +276,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
 </nav>
-<p class="legalCopy"><small><i>Copyright &#169; 2011 - 2021 LMAX Ltd. All Rights Reserved.</i></small></p>
+<p class="legalCopy"><small><i>Copyright &#169; 2011 - 2025 LMAX Ltd. All Rights Reserved.</i></small></p>
 </footer>
 </body>
 </html>

@@ -6,15 +6,16 @@
 <title>FatalExceptionHandler (Disruptor)</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
-<link rel="stylesheet" type="text/css" href="../../../../jquery/jquery-ui.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../jquery/jquery-ui.min.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../jquery-ui.overrides.css" title="Style">
 <script type="text/javascript" src="../../../../script.js"></script>
 <script type="text/javascript" src="../../../../jquery/jszip/dist/jszip.min.js"></script>
 <script type="text/javascript" src="../../../../jquery/jszip-utils/dist/jszip-utils.min.js"></script>
 <!--[if IE]>
 <script type="text/javascript" src="../../../../jquery/jszip-utils/dist/jszip-utils-ie.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="../../../../jquery/jquery-3.5.1.js"></script>
-<script type="text/javascript" src="../../../../jquery/jquery-ui.js"></script>
+<script type="text/javascript" src="../../../../jquery/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="../../../../jquery/jquery-ui.min.js"></script>
 </head>
 <body>
 <script type="text/javascript"><!--
@@ -149,7 +150,7 @@ implements <a href="ExceptionHandler.html" title="interface in com.lmax.disrupto
 <ul class="blockList">
 <li class="blockList">
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-<section role="region">
+<section>
 <ul class="blockList">
 <li class="blockList"><a id="constructor.summary">
 <!--   -->
@@ -170,7 +171,7 @@ implements <a href="ExceptionHandler.html" title="interface in com.lmax.disrupto
 </ul>
 </section>
 <!-- ========== METHOD SUMMARY =========== -->
-<section role="region">
+<section>
 <ul class="blockList">
 <li class="blockList"><a id="method.summary">
 <!--   -->
@@ -196,14 +197,14 @@ implements <a href="ExceptionHandler.html" title="interface in com.lmax.disrupto
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#handleOnShutdownException(java.lang.Throwable)">handleOnShutdownException</a></span>&#8203;(java.lang.Throwable&nbsp;ex)</code></th>
 <td class="colLast">
-<div class="block">Callback to notify of an exception during <a href="LifecycleAware.html#onShutdown()"><code>LifecycleAware.onShutdown()</code></a></div>
+<div class="block">Callback to notify of an exception during <code>EventHandlerBase.onShutdown()</code></div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#handleOnStartException(java.lang.Throwable)">handleOnStartException</a></span>&#8203;(java.lang.Throwable&nbsp;ex)</code></th>
 <td class="colLast">
-<div class="block">Callback to notify of an exception during <a href="LifecycleAware.html#onStart()"><code>LifecycleAware.onStart()</code></a></div>
+<div class="block">Callback to notify of an exception during <code>EventHandlerBase.onStart()</code></div>
 </td>
 </tr>
 </table>
@@ -224,7 +225,7 @@ implements <a href="ExceptionHandler.html" title="interface in com.lmax.disrupto
 <ul class="blockList">
 <li class="blockList">
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
-<section role="region">
+<section>
 <ul class="blockList">
 <li class="blockList"><a id="constructor.detail">
 <!--   -->
@@ -243,7 +244,7 @@ implements <a href="ExceptionHandler.html" title="interface in com.lmax.disrupto
 </ul>
 </section>
 <!-- ============ METHOD DETAIL ========== -->
-<section role="region">
+<section>
 <ul class="blockList">
 <li class="blockList"><a id="method.detail">
 <!--   -->
@@ -281,7 +282,7 @@ implements <a href="ExceptionHandler.html" title="interface in com.lmax.disrupto
 <h4>handleOnStartException</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;handleOnStartException&#8203;(java.lang.Throwable&nbsp;ex)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="ExceptionHandler.html#handleOnStartException(java.lang.Throwable)">ExceptionHandler</a></code></span></div>
-<div class="block">Callback to notify of an exception during <a href="LifecycleAware.html#onStart()"><code>LifecycleAware.onStart()</code></a></div>
+<div class="block">Callback to notify of an exception during <code>EventHandlerBase.onStart()</code></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="ExceptionHandler.html#handleOnStartException(java.lang.Throwable)">handleOnStartException</a></code>&nbsp;in interface&nbsp;<code><a href="ExceptionHandler.html" title="interface in com.lmax.disruptor">ExceptionHandler</a>&lt;java.lang.Object&gt;</code></dd>
@@ -298,7 +299,7 @@ implements <a href="ExceptionHandler.html" title="interface in com.lmax.disrupto
 <h4>handleOnShutdownException</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;handleOnShutdownException&#8203;(java.lang.Throwable&nbsp;ex)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="ExceptionHandler.html#handleOnShutdownException(java.lang.Throwable)">ExceptionHandler</a></code></span></div>
-<div class="block">Callback to notify of an exception during <a href="LifecycleAware.html#onShutdown()"><code>LifecycleAware.onShutdown()</code></a></div>
+<div class="block">Callback to notify of an exception during <code>EventHandlerBase.onShutdown()</code></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="ExceptionHandler.html#handleOnShutdownException(java.lang.Throwable)">handleOnShutdownException</a></code>&nbsp;in interface&nbsp;<code><a href="ExceptionHandler.html" title="interface in com.lmax.disruptor">ExceptionHandler</a>&lt;java.lang.Object&gt;</code></dd>
@@ -376,7 +377,7 @@ implements <a href="ExceptionHandler.html" title="interface in com.lmax.disrupto
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
 </nav>
-<p class="legalCopy"><small><i>Copyright &#169; 2011 - 2021 LMAX Ltd. All Rights Reserved.</i></small></p>
+<p class="legalCopy"><small><i>Copyright &#169; 2011 - 2025 LMAX Ltd. All Rights Reserved.</i></small></p>
 </footer>
 </body>
 </html>

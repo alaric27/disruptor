@@ -6,15 +6,16 @@
 <title>AggregateEventHandler (Disruptor)</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
-<link rel="stylesheet" type="text/css" href="../../../../jquery/jquery-ui.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../jquery/jquery-ui.min.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../jquery-ui.overrides.css" title="Style">
 <script type="text/javascript" src="../../../../script.js"></script>
 <script type="text/javascript" src="../../../../jquery/jszip/dist/jszip.min.js"></script>
 <script type="text/javascript" src="../../../../jquery/jszip-utils/dist/jszip-utils.min.js"></script>
 <!--[if IE]>
 <script type="text/javascript" src="../../../../jquery/jszip-utils/dist/jszip-utils-ie.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="../../../../jquery/jquery-3.5.1.js"></script>
-<script type="text/javascript" src="../../../../jquery/jquery-ui.js"></script>
+<script type="text/javascript" src="../../../../jquery/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="../../../../jquery/jquery-ui.min.js"></script>
 </head>
 <body>
 <script type="text/javascript"><!--
@@ -26,8 +27,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":10,"i1":10,"i2":10};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var data = {"i0":18,"i1":10,"i2":10,"i3":10,"i4":18};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -137,12 +138,12 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dl>
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;T&gt;</code>, <code><a href="LifecycleAware.html" title="interface in com.lmax.disruptor">LifecycleAware</a></code></dd>
+<dd><code><a href="EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;T&gt;</code>, <code><a href="EventHandlerIdentity.html" title="interface in com.lmax.disruptor">EventHandlerIdentity</a></code></dd>
 </dl>
 <hr>
 <pre>public final class <span class="typeNameLabel">AggregateEventHandler&lt;T&gt;</span>
 extends java.lang.Object
-implements <a href="EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;T&gt;, <a href="LifecycleAware.html" title="interface in com.lmax.disruptor">LifecycleAware</a></pre>
+implements <a href="EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;T&gt;</pre>
 <div class="block">An aggregate collection of <a href="EventHandler.html" title="interface in com.lmax.disruptor"><code>EventHandler</code></a>s that get called in sequence for each event.</div>
 </li>
 </ul>
@@ -151,7 +152,7 @@ implements <a href="EventHandler.html" title="interface in com.lmax.disruptor">E
 <ul class="blockList">
 <li class="blockList">
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-<section role="region">
+<section>
 <ul class="blockList">
 <li class="blockList"><a id="constructor.summary">
 <!--   -->
@@ -174,20 +175,28 @@ implements <a href="EventHandler.html" title="interface in com.lmax.disruptor">E
 </ul>
 </section>
 <!-- ========== METHOD SUMMARY =========== -->
-<section role="region">
+<section>
 <ul class="blockList">
 <li class="blockList"><a id="method.summary">
 <!--   -->
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t5" class="tableTab"><span><a href="javascript:show(16);">Default Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colSecond" scope="col">Method</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink">onBatchStart</span>&#8203;(long&nbsp;batchSize,
+            long&nbsp;queueDepth)</code></th>
+<td class="colLast">
+<div class="block">Invoked by <a href="BatchEventProcessor.html" title="class in com.lmax.disruptor"><code>BatchEventProcessor</code></a> prior to processing a batch of events</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#onEvent(T,long,boolean)">onEvent</a></span>&#8203;(<a href="AggregateEventHandler.html" title="type parameter in AggregateEventHandler">T</a>&nbsp;event,
        long&nbsp;sequence,
@@ -196,18 +205,21 @@ implements <a href="EventHandler.html" title="interface in com.lmax.disruptor">E
 <div class="block">Called when a publisher has published an event to the <a href="RingBuffer.html" title="class in com.lmax.disruptor"><code>RingBuffer</code></a>.</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#onShutdown()">onShutdown</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Called once just before the thread is shutdown.</div>
-</td>
-</tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#onShutdown()">onShutdown</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#onStart()">onStart</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink">onTimeout</span>&#8203;(long&nbsp;sequence)</code></th>
 <td class="colLast">
-<div class="block">Called once on thread start before first event is available.</div>
+<div class="block">Invoked when a <a href="BatchEventProcessor.html" title="class in com.lmax.disruptor"><code>BatchEventProcessor</code></a>'s <a href="WaitStrategy.html" title="interface in com.lmax.disruptor"><code>WaitStrategy</code></a> throws a <a href="TimeoutException.html" title="class in com.lmax.disruptor"><code>TimeoutException</code></a>.</div>
 </td>
 </tr>
 </table>
@@ -217,6 +229,13 @@ implements <a href="EventHandler.html" title="interface in com.lmax.disruptor">E
 </a>
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></li>
+</ul>
+<ul class="blockList">
+<li class="blockList"><a id="methods.inherited.from.class.com.lmax.disruptor.EventHandler">
+<!--   -->
+</a>
+<h3>Methods inherited from interface&nbsp;com.lmax.disruptor.<a href="EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a></h3>
+<code><a href="EventHandler.html#setSequenceCallback(com.lmax.disruptor.Sequence)">setSequenceCallback</a></code></li>
 </ul>
 </li>
 </ul>
@@ -228,7 +247,7 @@ implements <a href="EventHandler.html" title="interface in com.lmax.disruptor">E
 <ul class="blockList">
 <li class="blockList">
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
-<section role="region">
+<section>
 <ul class="blockList">
 <li class="blockList"><a id="constructor.detail">
 <!--   -->
@@ -253,7 +272,7 @@ public&nbsp;AggregateEventHandler&#8203;(<a href="EventHandler.html" title="inte
 </ul>
 </section>
 <!-- ============ METHOD DETAIL ========== -->
-<section role="region">
+<section>
 <ul class="blockList">
 <li class="blockList"><a id="method.detail">
 <!--   -->
@@ -297,29 +316,47 @@ public&nbsp;AggregateEventHandler&#8203;(<a href="EventHandler.html" title="inte
 <li class="blockList">
 <h4>onStart</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;onStart()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="LifecycleAware.html#onStart()">LifecycleAware</a></code></span></div>
-<div class="block">Called once on thread start before first event is available.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="LifecycleAware.html#onStart()">onStart</a></code>&nbsp;in interface&nbsp;<code><a href="LifecycleAware.html" title="interface in com.lmax.disruptor">LifecycleAware</a></code></dd>
-</dl>
 </li>
 </ul>
 <a id="onShutdown()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>onShutdown</h4>
 <pre class="methodSignature">public&nbsp;void&nbsp;onShutdown()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="LifecycleAware.html#onShutdown()">LifecycleAware</a></code></span></div>
-<div class="block">Called once just before the thread is shutdown.
-
- <p>Sequence event processing will already have stopped before this method is called. No events will
- be processed after this message.</div>
+</li>
+</ul>
+<a id="onBatchStart(long,long)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>onBatchStart</h4>
+<pre class="methodSignature">public default&nbsp;void&nbsp;onBatchStart&#8203;(long&nbsp;batchSize,
+                                 long&nbsp;queueDepth)</pre>
+<div class="block">Invoked by <a href="BatchEventProcessor.html" title="class in com.lmax.disruptor"><code>BatchEventProcessor</code></a> prior to processing a batch of events</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="LifecycleAware.html#onShutdown()">onShutdown</a></code>&nbsp;in interface&nbsp;<code><a href="LifecycleAware.html" title="interface in com.lmax.disruptor">LifecycleAware</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>batchSize</code> - the size of the batch that is starting</dd>
+<dd><code>queueDepth</code> - the total number of queued up events including the batch about to be processed</dd>
+</dl>
+</li>
+</ul>
+<a id="onTimeout(long)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>onTimeout</h4>
+<pre class="methodSignature">public default&nbsp;void&nbsp;onTimeout&#8203;(long&nbsp;sequence)
+                       throws java.lang.Exception</pre>
+<div class="block">Invoked when a <a href="BatchEventProcessor.html" title="class in com.lmax.disruptor"><code>BatchEventProcessor</code></a>'s <a href="WaitStrategy.html" title="interface in com.lmax.disruptor"><code>WaitStrategy</code></a> throws a <a href="TimeoutException.html" title="class in com.lmax.disruptor"><code>TimeoutException</code></a>.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>sequence</code> - - the last processed sequence.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.Exception</code> - if the implementation is unable to handle this timeout.</dd>
 </dl>
 </li>
 </ul>
@@ -392,7 +429,7 @@ public&nbsp;AggregateEventHandler&#8203;(<a href="EventHandler.html" title="inte
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
 </nav>
-<p class="legalCopy"><small><i>Copyright &#169; 2011 - 2021 LMAX Ltd. All Rights Reserved.</i></small></p>
+<p class="legalCopy"><small><i>Copyright &#169; 2011 - 2025 LMAX Ltd. All Rights Reserved.</i></small></p>
 </footer>
 </body>
 </html>

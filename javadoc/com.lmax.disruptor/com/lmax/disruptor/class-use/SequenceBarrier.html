@@ -6,15 +6,16 @@
 <title>Uses of Interface com.lmax.disruptor.SequenceBarrier (Disruptor)</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
-<link rel="stylesheet" type="text/css" href="../../../../../jquery/jquery-ui.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../../jquery/jquery-ui.min.css" title="Style">
+<link rel="stylesheet" type="text/css" href="../../../../../jquery-ui.overrides.css" title="Style">
 <script type="text/javascript" src="../../../../../script.js"></script>
 <script type="text/javascript" src="../../../../../jquery/jszip/dist/jszip.min.js"></script>
 <script type="text/javascript" src="../../../../../jquery/jszip-utils/dist/jszip-utils.min.js"></script>
 <!--[if IE]>
 <script type="text/javascript" src="../../../../../jquery/jszip-utils/dist/jszip-utils-ie.min.js"></script>
 <![endif]-->
-<script type="text/javascript" src="../../../../../jquery/jquery-3.5.1.js"></script>
-<script type="text/javascript" src="../../../../../jquery/jquery-ui.js"></script>
+<script type="text/javascript" src="../../../../../jquery/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="../../../../../jquery/jquery-ui.min.js"></script>
 </head>
 <body>
 <script type="text/javascript"><!--
@@ -123,7 +124,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="blockList">
 <ul class="blockList">
 <li class="blockList">
-<section role="region"><a id="com.lmax.disruptor">
+<section><a id="com.lmax.disruptor">
 <!--   -->
 </a>
 <h3>Uses of <a href="../SequenceBarrier.html" title="interface in com.lmax.disruptor">SequenceBarrier</a> in <a href="../package-summary.html">com.lmax.disruptor</a></h3>
@@ -166,6 +167,27 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tbody>
+<tr class="altColor">
+<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../BatchEventProcessor.html" title="class in com.lmax.disruptor">BatchEventProcessor</a>&lt;T&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BatchEventProcessorBuilder.</span><code><span class="memberNameLink"><a href="../BatchEventProcessorBuilder.html#build(com.lmax.disruptor.DataProvider,com.lmax.disruptor.SequenceBarrier,com.lmax.disruptor.EventHandler)">build</a></span>&#8203;(<a href="../DataProvider.html" title="interface in com.lmax.disruptor">DataProvider</a>&lt;T&gt;&nbsp;dataProvider,
+     <a href="../SequenceBarrier.html" title="interface in com.lmax.disruptor">SequenceBarrier</a>&nbsp;sequenceBarrier,
+     <a href="../EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;? super T&gt;&nbsp;eventHandler)</code></th>
+<td class="colLast">
+<div class="block">Construct a <a href="../EventProcessor.html" title="interface in com.lmax.disruptor"><code>EventProcessor</code></a> that will automatically track the progress by updating its sequence when
+ the <a href="../EventHandler.html#onEvent(T,long,boolean)"><code>EventHandler.onEvent(Object, long, boolean)</code></a> method returns.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>&lt;T&gt;&nbsp;<a href="../BatchEventProcessor.html" title="class in com.lmax.disruptor">BatchEventProcessor</a>&lt;T&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BatchEventProcessorBuilder.</span><code><span class="memberNameLink"><a href="../BatchEventProcessorBuilder.html#build(com.lmax.disruptor.DataProvider,com.lmax.disruptor.SequenceBarrier,com.lmax.disruptor.RewindableEventHandler,com.lmax.disruptor.BatchRewindStrategy)">build</a></span>&#8203;(<a href="../DataProvider.html" title="interface in com.lmax.disruptor">DataProvider</a>&lt;T&gt;&nbsp;dataProvider,
+     <a href="../SequenceBarrier.html" title="interface in com.lmax.disruptor">SequenceBarrier</a>&nbsp;sequenceBarrier,
+     <a href="../RewindableEventHandler.html" title="interface in com.lmax.disruptor">RewindableEventHandler</a>&lt;? super T&gt;&nbsp;rewindableEventHandler,
+     <a href="../BatchRewindStrategy.html" title="interface in com.lmax.disruptor">BatchRewindStrategy</a>&nbsp;batchRewindStrategy)</code></th>
+<td class="colLast">
+<div class="block">Construct a <a href="../EventProcessor.html" title="interface in com.lmax.disruptor"><code>EventProcessor</code></a> that will automatically track the progress by updating its sequence when
+ the <a href="../EventHandler.html#onEvent(T,long,boolean)"><code>EventHandler.onEvent(Object, long, boolean)</code></a> method returns.</div>
+</td>
+</tr>
 <tr class="altColor">
 <td class="colFirst"><code>long</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">BlockingWaitStrategy.</span><code><span class="memberNameLink"><a href="../BlockingWaitStrategy.html#waitFor(long,com.lmax.disruptor.Sequence,com.lmax.disruptor.Sequence,com.lmax.disruptor.SequenceBarrier)">waitFor</a></span>&#8203;(long&nbsp;sequence,
@@ -242,28 +264,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </tr>
 </tbody>
 </table>
-<table class="useSummary">
-<caption><span>Constructors in <a href="../package-summary.html">com.lmax.disruptor</a> with parameters of type <a href="../SequenceBarrier.html" title="interface in com.lmax.disruptor">SequenceBarrier</a></span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../BatchEventProcessor.html#%3Cinit%3E(com.lmax.disruptor.DataProvider,com.lmax.disruptor.SequenceBarrier,com.lmax.disruptor.EventHandler)">BatchEventProcessor</a></span>&#8203;(<a href="../DataProvider.html" title="interface in com.lmax.disruptor">DataProvider</a>&lt;<a href="../BatchEventProcessor.html" title="type parameter in BatchEventProcessor">T</a>&gt;&nbsp;dataProvider,
-                   <a href="../SequenceBarrier.html" title="interface in com.lmax.disruptor">SequenceBarrier</a>&nbsp;sequenceBarrier,
-                   <a href="../EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;? super <a href="../BatchEventProcessor.html" title="type parameter in BatchEventProcessor">T</a>&gt;&nbsp;eventHandler)</code></th>
-<td class="colLast">
-<div class="block">Construct a <a href="../EventProcessor.html" title="interface in com.lmax.disruptor"><code>EventProcessor</code></a> that will automatically track the progress by updating its sequence when
- the <a href="../EventHandler.html#onEvent(T,long,boolean)"><code>EventHandler.onEvent(Object, long, boolean)</code></a> method returns.</div>
-</td>
-</tr>
-</tbody>
-</table>
 </section>
 </li>
 <li class="blockList">
-<section role="region"><a id="com.lmax.disruptor.dsl">
+<section><a id="com.lmax.disruptor.dsl">
 <!--   -->
 </a>
 <h3>Uses of <a href="../SequenceBarrier.html" title="interface in com.lmax.disruptor">SequenceBarrier</a> in <a href="../dsl/package-summary.html">com.lmax.disruptor.dsl</a></h3>
@@ -284,7 +288,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../SequenceBarrier.html" title="interface in com.lmax.disruptor">SequenceBarrier</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Disruptor.</span><code><span class="memberNameLink"><a href="../dsl/Disruptor.html#getBarrierFor(com.lmax.disruptor.EventHandler)">getBarrierFor</a></span>&#8203;(<a href="../EventHandler.html" title="interface in com.lmax.disruptor">EventHandler</a>&lt;<a href="../dsl/Disruptor.html" title="type parameter in Disruptor">T</a>&gt;&nbsp;handler)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Disruptor.</span><code><span class="memberNameLink"><a href="../dsl/Disruptor.html#getBarrierFor(com.lmax.disruptor.EventHandlerIdentity)">getBarrierFor</a></span>&#8203;(<a href="../EventHandlerIdentity.html" title="interface in com.lmax.disruptor">EventHandlerIdentity</a>&nbsp;handler)</code></th>
 <td class="colLast">
 <div class="block">Get the <a href="../SequenceBarrier.html" title="interface in com.lmax.disruptor"><code>SequenceBarrier</code></a> used by a specific handler.</div>
 </td>
@@ -343,7 +347,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
 </nav>
-<p class="legalCopy"><small><i>Copyright &#169; 2011 - 2021 LMAX Ltd. All Rights Reserved.</i></small></p>
+<p class="legalCopy"><small><i>Copyright &#169; 2011 - 2025 LMAX Ltd. All Rights Reserved.</i></small></p>
 </footer>
 </body>
 </html>
